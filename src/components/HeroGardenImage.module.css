@@ -1,0 +1,44 @@
+.wrap {
+  position: relative;
+  width: 100%;
+  max-width: 760px;
+  margin-left: auto;
+  pointer-events: none;
+  user-select: none;
+  overflow: visible;
+}
+
+.image {
+  display: block;
+  width: 112%;
+  height: auto;
+  max-width: none;
+  object-fit: contain;
+  transform: translateX(-10%) translateY(-1%);
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (max-width: 1200px) {
+  .image {
+    width: 106%;
+    transform: translateX(-2%) translateY(0);
+  }
+}
+
+@media (max-width: 1024px) {
+  .wrap {
+    max-width: 620px;
+  }
+
+  .image {
+    width: 102%;
+    transform: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .wrap {
+    display: none;
+  }
+}

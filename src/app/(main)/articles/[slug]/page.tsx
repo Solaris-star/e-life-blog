@@ -1,0 +1,112 @@
+import { getPostBySlug, getPosts } from "@/lib/content";
+import { MDXRemote } from "next-mdx-remote/rsc";
+import remarkGfm from "remark-gfm";
+import remarkWikiLink from "remark-wiki-link";
+import { notFound } from "next/navigation";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
+import type { ComponentPropsWithoutRef } from "react";
+import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
+
+export async function generateStaticParams() {
+  const posts = getPosts();
+  return posts.map((post) => ({
+    slug: post.slug,
+  }));
+}
+
+export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const post = getPostBySlug(decodeURIComponent(slug));
+
+  if (!post) {
+    notFound();
+  }
+
+  // Define custom MDX components (like styling standard Markdown elements with Tailwind)
+  const components = {
+    h1: (props: ComponentPropsWithoutRef<"h1">) => <h1 className="mb-4 mt-10 text-3xl font-black tracking-normal text-[color:var(--foreground)]" {...props} />,
+    h2: (props: ComponentPropsWithoutRef<"h2">) => <h2 className="mb-4 mt-10 border-b-2 border-[color:var(--line)] pb-3 text-2xl font-black tracking-normal text-[color:var(--foreground)]" {...props} />,
+    h3: (props: ComponentPropsWithoutRef<"h3">) => <h3 className="mb-3 mt-8 text-xl font-black tracking-normal text-[color:var(--foreground)]" {...props} />,
+    p: (props: ComponentPropsWithoutRef<"p">) => <p className="leading-8 text-[color:color-mix(in_srgb,var(--foreground)_84%,var(--walnut))] [&:not(:first-child)]:mt-6" {...props} />,
+    ul: (props: ComponentPropsWithoutRef<"ul">) => <ul className="my-6 ml-6 list-disc text-[color:color-mix(in_srgb,var(--foreground)_84%,var(--walnut))] [&>li]:mt-2" {...props} />,
+    ol: (props: ComponentPropsWithoutRef<"ol">) => <ol className="my-6 ml-6 list-decimal text-[color:color-mix(in_srgb,var(--foreground)_84%,var(--walnut))] [&>li]:mt-2" {...props} />,
+    li: (props: ComponentPropsWithoutRef<"li">) => <li className="leading-7" {...props} />,
+    a: (props: ComponentPropsWithoutRef<"a">) => {
+      const { href = "", ...rest } = props;
+      // Handle internal wiki links
+      if (href.startsWith('/')) {
+        return <Link href={href} className="font-black text-[color:var(--accent-strong)] hover:underline" {...rest} />;
+      }
+      return <a href={href} className="font-black text-[color:var(--accent-strong)] hover:underline" target="_blank" rel="noopener noreferrer" {...rest} />;
+    },
+    blockquote: (props: ComponentPropsWithoutRef<"blockquote">) => <blockquote className="mt-6 border-l-[6px] border-[color:var(--mustard)] bg-[color:var(--surface)] py-3 pl-6 font-bold text-[color:var(--walnut)] shadow-[3px_3px_0_var(--ink)]" {...props} />,
+    code: (props: ComponentPropsWithoutRef<"code">) => <code className="relative rounded-[2px] border border-[color:var(--line)] bg-[color:rgb(212_165_116_/_28%)] px-[0.35rem] py-[0.2rem] font-mono text-sm text-[color:var(--foreground)]" {...props} />,
+    pre: (props: ComponentPropsWithoutRef<"pre">) => <pre className="mb-4 mt-6 overflow-x-auto rounded-[2px] border-2 border-[color:var(--line)] bg-[color:var(--foreground)] p-4 text-sm text-[color:var(--surface)] shadow-[var(--shadow-small)]" {...props} />,
+    // Handle images specifically to make them responsive
+    img: (props: ComponentPropsWithoutRef<"img">) => <img className="mx-auto my-8 max-h-[600px] rounded-[2px] border-2 border-[color:var(--line)] object-contain shadow-[var(--shadow-small)]" alt={props.alt || ''} {...props} />
+  };
+
+  return (
+    <article className="mx-auto max-w-4xl pb-8">
+      <Breadcrumbs
+        items={[
+          { label: "首页", href: "/" },
+          { label: "写作", href: "/writing" },
+          { label: "文章", href: "/articles" },
+          { label: post.meta.title },
+        ]}
+      />
+
+      <Link href="/articles" className="mb-8 inline-flex items-center gap-2 text-sm font-black text-[color:var(--walnut)] transition-colors hover:text-[color:var(--accent-strong)]">
+        <ArrowLeft className="h-4 w-4" />
+        返回文章列表
+      </Link>
+
+      <header className="mcm-panel mb-12 space-y-5 p-7 md:p-10">
+        <p className="section-kicker">Post</p>
+        <h1 className="text-4xl font-black leading-tight tracking-normal text-[color:var(--foreground)] md:text-6xl">
+          {post.meta.title}
+        </h1>
+
+        <div className="flex flex-wrap items-center gap-3 text-sm font-bold text-[color:var(--walnut)]">
+          <time dateTime={post.meta.date}>
+            发布于 {new Date(post.meta.date).toLocaleDateString('zh-CN', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })}
+          </time>
+
+          {post.meta.tags && post.meta.tags.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2">
+              {post.meta.tags.map((tag) => (
+                <Link key={tag} href={`/tags/${tag}`} className="mcm-tag">
+                  #{tag}
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      </header>
+
+      <div className="post-body mx-auto">
+        <MDXRemote
+          source={post.content}
+          components={components}
+          options={{
+            mdxOptions: {
+              remarkPlugins: [
+                remarkGfm,
+                [remarkWikiLink, {
+                  // Setup to resolve Obsidian's [[Links]]
+                  hrefTemplate: (permalink: string) => `/articles/${permalink}`
+                }]
+              ],
+            }
+          }}
+        />
+      </div>
+    </article>
+  );
+}

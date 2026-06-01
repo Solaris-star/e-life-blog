@@ -1,19 +1,26 @@
+import Image from "next/image";
+
+export const dynamic = "force-dynamic";
+
 export interface Friend {
   name: string;
   url: string;
   description: string;
+  logoSrc: string;
+  logoAlt: string;
+  inviteUrl: string;
+  inviteNote: string;
 }
 
 const friends: Friend[] = [
   {
-    name: "John Doe",
-    url: "https://example.com",
-    description: "A passionate developer building awesome things."
-  },
-  {
-    name: "Jane Smith",
-    url: "https://example.com",
-    description: "UI/UX Designer and Frontend Engineer."
+    name: "L 站",
+    url: "https://linux.do/",
+    description: "Linux.do 社区",
+    logoSrc: "/images/friends/linuxdo-logo.png",
+    logoAlt: "LINUX DO",
+    inviteUrl: "https://invite.linuxdo.org/",
+    inviteNote: "国内直连，不要挂 VPN"
   }
 ];
 
@@ -35,25 +42,43 @@ export default function FriendsPage() {
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {friends.map((friend) => (
-          <a
+          <div
             key={friend.name}
-            href={friend.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mcm-card group flex items-center gap-4 p-5"
+            className="mcm-card group flex items-center gap-5 p-5"
           >
-            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-4 border-[color:var(--mustard)] bg-[color:var(--accent)] text-lg font-black uppercase text-[color:var(--surface)] transition-transform group-hover:scale-105">
-              {friend.name.slice(0, 1)}
-            </span>
-            <div className="overflow-hidden">
-              <h2 className="truncate text-lg font-black text-[color:var(--foreground)] transition-colors group-hover:text-[color:var(--accent-strong)]">
+            <Image
+              src={friend.logoSrc}
+              alt={friend.logoAlt}
+              width={120}
+              height={35}
+              className="h-[35px] w-[120px] shrink-0 object-contain"
+              style={{ width: 120, height: 35 }}
+            />
+            <div className="min-w-0 flex-1 overflow-hidden">
+              <a
+                href={friend.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block truncate text-lg font-black text-[color:var(--foreground)] transition-colors group-hover:text-[color:var(--accent-strong)]"
+              >
                 {friend.name}
-              </h2>
+              </a>
               <p className="truncate text-sm text-[color:var(--walnut)]">
                 {friend.description}
               </p>
+              <a
+                href={friend.inviteUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 inline-flex w-fit max-w-full border-b-2 border-[color:var(--accent)] text-sm font-black text-[color:var(--accent-strong)] hover:border-[color:var(--line)] hover:text-[color:var(--foreground)]"
+              >
+                自主邀请码
+              </a>
+              <p className="mt-1 text-xs font-bold leading-5 text-[color:var(--walnut)]">
+                {friend.inviteNote}
+              </p>
             </div>
-          </a>
+          </div>
         ))}
       </div>
 

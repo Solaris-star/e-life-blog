@@ -6,6 +6,8 @@
     "dev": "next dev -p 3001",
     "prebuild": "node scripts/verify-friends-links.mjs",
     "build": "next build",
+    "deploy:blog": "docker compose -f /Users/solaris/AI/docker-compose.yml up -d --build --no-deps blog && npm run edgeone:purge",
+    "edgeone:purge": "node scripts/purge-edgeone-cache.mjs",
     "start": "next start -p 3001",
     "lint": "eslint"
   },
@@ -18,18 +20,19 @@
     "next-mdx-remote": "^6.0.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "rehype-slug": "^6.0.0",
     "remark-gfm": "^4.0.1",
     "remark-wiki-link": "^2.0.1",
     "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
+    "@types/node": "20.19.41",
+    "@types/react": "19.2.15",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "5.9.3"
   }
 }

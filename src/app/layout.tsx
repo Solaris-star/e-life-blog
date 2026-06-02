@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import "./globals.css";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
-  title: "我的博客",
-  description: "日常帖子、推荐文章、开源项目、每日新闻热点与Obsidian同步的数字花园。",
+  title: "E-Life",
+  description: "整理海外支付、域名邮箱、云服网络、福利羊毛、OPC 实战与 AI 研究的长期文章。",
 };
 
 export default function RootLayout({
@@ -16,6 +17,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh" suppressHydrationWarning>
+      <head>
+        <Script
+          src="/umami/script.js"
+          data-website-id="8f7a8110-e25d-44e3-96ce-44dbdc10656c"
+          data-host-url="/umami"
+          strategy="afterInteractive"
+        />
+      </head>
       <body
         className="site-shell min-h-screen flex flex-col antialiased"
       >

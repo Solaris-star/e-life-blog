@@ -9,6 +9,7 @@ export interface PostMeta {
   tags?: string[];
   published?: boolean;
   featured?: boolean;
+  cover?: string;
 }
 
 export interface Post {

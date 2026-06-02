@@ -212,6 +212,363 @@ button {
   box-shadow: 7px 7px 0 var(--ink);
 }
 
+.ai-roadmap-hero {
+  isolation: isolate;
+  overflow: visible;
+  background:
+    linear-gradient(90deg, rgb(217 109 58 / 9%), transparent 34%),
+    linear-gradient(180deg, transparent 0 58%, rgb(79 122 88 / 8%) 58% 100%),
+    radial-gradient(circle at 12% 18%, rgb(36 31 24 / 5%) 0 1px, transparent 1.2px),
+    var(--surface);
+  background-size: auto, auto, 22px 22px, auto;
+}
+
+.ai-roadmap-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 44px,
+      rgb(36 31 24 / 6%) 44px 45px
+  );
+  mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
+  opacity: 0.24;
+  animation: roadmap-scan 12s linear infinite;
+}
+
+.ai-roadmap-layout {
+  position: relative;
+  z-index: 10;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.ai-roadmap-counter,
+.ai-roadmap-status {
+  border: 2px solid var(--line);
+  background: var(--paper-light);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+.ai-roadmap-counter {
+  min-width: 4.2rem;
+  padding: 0.25rem 0.45rem;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+
+.ai-roadmap-counter[data-status="ended"],
+.ai-roadmap-status[data-status="ended"] {
+  background: rgb(79 122 88 / 16%);
+  color: var(--olive-dark);
+}
+
+.ai-roadmap-counter[data-status="live"],
+.ai-roadmap-status[data-status="live"] {
+  background: rgb(217 109 58 / 18%);
+  color: var(--accent-strong);
+}
+
+.ai-roadmap-counter[data-status="upcoming"],
+.ai-roadmap-status[data-status="upcoming"] {
+  background: rgb(214 168 111 / 18%);
+  color: var(--walnut);
+}
+
+.ai-roadmap-status {
+  display: inline-flex;
+  min-height: 1.55rem;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 999px;
+  padding: 0.2rem 0.45rem;
+  font-size: 0.66rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.ai-roadmap-track {
+  --roadmap-progress: 0%;
+  position: relative;
+  overflow-x: visible;
+  overflow-y: visible;
+  padding: 0.7rem 0 5.9rem;
+  scrollbar-width: none;
+}
+
+.ai-roadmap-track::-webkit-scrollbar {
+  display: none;
+}
+
+.ai-roadmap-rail {
+  position: absolute;
+  top: 1.86rem;
+  left: 0.7rem;
+  right: 0.7rem;
+  height: 0.42rem;
+  border: 2px solid var(--line);
+  background: var(--paper-deep);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+.ai-roadmap-rail::after {
+  content: "";
+  position: absolute;
+  inset: -2px auto -2px -2px;
+  width: var(--roadmap-progress);
+  border: 2px solid var(--line);
+  background: var(--accent);
+  transition: width 420ms ease;
+}
+
+.ai-roadmap-list {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  gap: 0.35rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ai-roadmap-node {
+  position: relative;
+}
+
+.ai-roadmap-link {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 0.32rem;
+  min-height: 4.95rem;
+  color: inherit;
+  text-decoration: none;
+  outline: none;
+}
+
+.ai-roadmap-dot {
+  width: 1.12rem;
+  height: 1.12rem;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper-light);
+  box-shadow: 2px 2px 0 var(--ink);
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.ai-roadmap-node[data-status="ended"] .ai-roadmap-dot {
+  background: var(--olive);
+}
+
+.ai-roadmap-node[data-status="live"] .ai-roadmap-dot {
+  background: var(--accent);
+  animation: roadmap-pulse 1.4s ease-in-out infinite;
+}
+
+.ai-roadmap-node[data-status="upcoming"] .ai-roadmap-dot {
+  background: var(--mustard);
+}
+
+.ai-roadmap-link:hover .ai-roadmap-dot,
+.ai-roadmap-link:focus-visible .ai-roadmap-dot {
+  transform: translateY(-2px) scale(1.12);
+}
+
+.ai-roadmap-label {
+  display: grid;
+  justify-items: center;
+  gap: 0.25rem;
+  width: 100%;
+  max-width: 6.9rem;
+  min-width: 0;
+  border: 2px solid var(--line);
+  border-radius: 3px;
+  background: rgb(255 248 234 / 58%);
+  padding: 0.38rem 0.35rem 0.45rem;
+  box-shadow: 2px 2px 0 color-mix(in srgb, var(--ink) 76%, transparent);
+  transition:
+    transform 160ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.dark .ai-roadmap-label {
+  background: rgb(48 41 31 / 76%);
+}
+
+.ai-roadmap-link:hover .ai-roadmap-label,
+.ai-roadmap-link:focus-visible .ai-roadmap-label {
+  background: color-mix(in srgb, var(--surface) 64%, var(--sand) 22%);
+  box-shadow: 4px 4px 0 var(--ink);
+  transform: translate(-1px, -1px);
+}
+
+.ai-roadmap-date {
+  font-family: var(--font-site-mono);
+  font-size: 0.63rem;
+  font-weight: 900;
+  color: var(--accent-strong);
+  white-space: nowrap;
+}
+
+.ai-roadmap-name {
+  min-height: 1.65rem;
+  text-align: center;
+  font-size: 0.74rem;
+  font-weight: 900;
+  line-height: 1.18;
+  color: var(--foreground);
+}
+
+.ai-roadmap-popover {
+  position: absolute;
+  left: 50%;
+  top: 5.65rem;
+  z-index: 30;
+  width: min(19rem, calc(100vw - 2rem));
+  pointer-events: none;
+  transform: translate(-50%, -0.35rem);
+  opacity: 0;
+  border: 2px solid var(--line);
+  border-radius: 4px;
+  background: rgb(255 248 234 / 96%);
+  padding: 0.75rem 0.85rem;
+  box-shadow: var(--shadow-small);
+  transition:
+    opacity 140ms ease,
+    transform 140ms ease;
+}
+
+.ai-roadmap-popover::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -0.5rem;
+  width: 0.8rem;
+  height: 0.8rem;
+  border-left: 2px solid var(--line);
+  border-top: 2px solid var(--line);
+  background: inherit;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.dark .ai-roadmap-popover {
+  background: rgb(48 41 31 / 96%);
+}
+
+.ai-roadmap-link:hover .ai-roadmap-popover,
+.ai-roadmap-link:focus-visible .ai-roadmap-popover {
+  transform: translate(-50%, 0);
+  opacity: 1;
+}
+
+.ai-roadmap-focus-card {
+  display: block;
+  align-self: stretch;
+  width: 100%;
+  border: 2px solid var(--line);
+  border-radius: 4px;
+  background:
+    linear-gradient(135deg, rgb(217 109 58 / 14%), transparent 34%),
+    rgb(255 248 234 / 78%);
+  padding: 0.85rem;
+  color: inherit;
+  text-decoration: none;
+  box-shadow: var(--shadow-press);
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease;
+}
+
+.dark .ai-roadmap-focus-card {
+  background:
+    linear-gradient(135deg, rgb(228 119 66 / 18%), transparent 34%),
+    rgb(48 41 31 / 78%);
+}
+
+.ai-roadmap-focus-card:hover,
+.ai-roadmap-focus-card:focus-visible {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-small);
+  outline: none;
+}
+
+@media (min-width: 1024px) {
+  .ai-roadmap-layout {
+    grid-template-columns: minmax(0, 1fr) clamp(18.5rem, 28vw, 22.5rem);
+    align-items: stretch;
+  }
+}
+
+@media (min-width: 1280px) {
+  .ai-roadmap-layout {
+    grid-template-columns: minmax(0, 1fr) clamp(20rem, 26vw, 24rem);
+  }
+
+  .ai-roadmap-label {
+    max-width: 7.3rem;
+  }
+}
+
+@media (max-width: 1023px) {
+  .ai-roadmap-track {
+    overflow-x: auto;
+  }
+
+  .ai-roadmap-list {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(6.8rem, 1fr);
+    min-width: 62rem;
+  }
+}
+
+@media (max-width: 720px) {
+  .ai-roadmap-track {
+    padding-bottom: 1rem;
+  }
+
+  .ai-roadmap-popover {
+    display: none;
+  }
+}
+
+@keyframes roadmap-pulse {
+  0%,
+  100% {
+    box-shadow: 2px 2px 0 var(--ink), 0 0 0 0 rgb(217 109 58 / 42%);
+  }
+  50% {
+    box-shadow: 2px 2px 0 var(--ink), 0 0 0 8px rgb(217 109 58 / 0%);
+  }
+}
+
+@keyframes roadmap-scan {
+  from {
+    transform: translateX(-40px);
+  }
+  to {
+    transform: translateX(40px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-roadmap-hero::after,
+  .ai-roadmap-node[data-status="live"] .ai-roadmap-dot {
+    animation: none;
+  }
+}
+
 .mcm-button {
   display: inline-flex;
   align-items: center;
@@ -471,6 +828,51 @@ button {
   letter-spacing: 0;
 }
 
+/* ─── AI Radar Daily page ──────────────────────── */
+.daily-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 370px;
+  gap: 16px;
+  align-items: stretch;
+}
+
+/* Left column: stack Top Stories + tabbed panel, and let the tabbed panel
+   grow so its bottom edge lines up with the right sidebar's bottom line
+   (reference layout). */
+.daily-main-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+.daily-main-col > :last-child {
+  flex: 1 1 auto;
+}
+
+/* Right column: keep radar panels tightly stacked. The left tab panel can grow
+   much taller on AI Tools, but that surplus height should not become large
+   gaps between sidebar panels. */
+.daily-side-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.daily-side-col > aside {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 0.75rem;
+  min-height: 0;
+}
+
+@media (max-width: 1024px) {
+  .daily-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 720px) {
   .shell-container {
     width: min(100% - 1rem, 76rem);
@@ -513,5 +915,685 @@ button {
     width: 1.6rem;
     height: 3.8rem;
     border-width: 4px;
+  }
+}
+
+/* ─── Top Stories — vintage clipping list ──────────── */
+.top-stories-panel {
+  position: relative;
+  border: 3px solid var(--line);
+  border-radius: 4px;
+  background:
+    radial-gradient(circle at 12% 16%, rgb(36 31 24 / 6%) 0 1px, transparent 1.2px),
+    color-mix(in srgb, var(--surface) 86%, var(--sand));
+  background-size: 22px 22px, auto;
+  box-shadow: var(--shadow-small);
+  padding: 14px 16px 8px;
+}
+
+.dark .top-stories-panel {
+  background:
+    radial-gradient(circle at 12% 16%, rgb(255 241 214 / 5%) 0 1px, transparent 1.2px),
+    var(--surface);
+  background-size: 22px 22px, auto;
+}
+
+.top-stories-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 2px;
+  padding-bottom: 7px;
+  border-bottom: 2px solid var(--line);
+}
+
+.top-stories-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Each story = a paper strip, dashed separator between strips */
+.story-strip {
+  position: relative;
+  border-bottom: 1.5px dashed color-mix(in srgb, var(--line) 42%, transparent);
+}
+
+.story-strip:last-child {
+  border-bottom: 0;
+}
+
+/* Clickable trigger — native <button>, children are phrasing spans */
+.story-trigger {
+  display: flex;
+  gap: 0.55rem;
+  width: 100%;
+  margin: 0;
+  min-height: 4.25rem;
+  padding: 8px 8px 8px 7px;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-left: 3px solid transparent; /* reserve room for active bar */
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  transition:
+    transform 140ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+
+.story-trigger:hover {
+  transform: translateX(2px);
+  background: color-mix(in srgb, var(--surface) 62%, var(--sand) 16%);
+}
+
+.story-trigger:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.story-strip.is-active .story-trigger {
+  border-left-color: var(--accent);
+  background: color-mix(in srgb, var(--surface) 52%, var(--sand) 22%);
+}
+
+.dark .story-trigger:hover,
+.dark .story-strip.is-active .story-trigger {
+  background: rgb(245 230 211 / 7%);
+}
+
+.story-index {
+  flex: none;
+  width: 1.72rem;
+  font-family: var(--font-site-mono);
+  font-size: 0.86rem;
+  font-weight: 800;
+  line-height: 1.45;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--walnut) 78%, transparent);
+}
+
+.story-strip.is-active .story-index {
+  color: var(--accent-strong);
+}
+
+.story-body {
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.story-headline-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.28rem 0.45rem;
+}
+
+.story-source {
+  flex: none;
+  font-family: var(--font-site-mono);
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--accent-strong);
+}
+
+.story-title {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.25;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  color: var(--foreground);
+  transition: color 140ms ease;
+}
+
+.story-trigger:hover .story-title {
+  color: var(--accent-strong);
+}
+
+.story-summary {
+  display: -webkit-box;
+  overflow: hidden;
+  margin-top: 3px;
+  font-size: 0.74rem;
+  line-height: 1.35;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  color: color-mix(in srgb, var(--walnut) 92%, transparent);
+}
+
+.story-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 5px;
+}
+
+/* External-link icon — sibling of the trigger, no nested interactive.
+   Sits over the cover plate's top-right corner with a paper backdrop. */
+.story-link {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  z-index: 2;
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--surface) 78%, transparent);
+  color: var(--accent-strong);
+  transition: color 140ms ease, transform 140ms ease;
+}
+
+.story-link:hover {
+  color: var(--accent-strong);
+  transform: translate(1px, -1px);
+}
+
+/* AI insight — inline drawer styled like a vintage annotation slip */
+.ai-insight {
+  margin: 0 8px 10px calc(1.72rem + 8px); /* align under body, clear of index */
+  max-width: 640px;
+  padding: 10px 12px 11px;
+  border: 1.5px solid #251d14;
+  border-radius: 2px;
+  background: #f3e2bf;
+  box-shadow: 4px 4px 0 rgb(32 27 20 / 85%);
+}
+
+.dark .ai-insight {
+  border-color: var(--line);
+  background: color-mix(in srgb, var(--surface) 78%, var(--sand) 22%);
+  box-shadow: 4px 4px 0 rgb(0 0 0 / 55%);
+}
+
+.ai-insight-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 7px;
+  font-family: var(--font-site-mono);
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #a84d27;
+}
+
+.dark .ai-insight-title {
+  color: var(--accent-strong);
+}
+
+.ai-insight-row {
+  margin-top: 3px;
+  font-size: 0.84rem;
+  line-height: 1.65;
+  color: #3a2f20;
+}
+
+.dark .ai-insight-row {
+  color: var(--foreground);
+}
+
+.ai-insight-row > b {
+  font-weight: 800;
+  color: #251d14;
+}
+
+.dark .ai-insight-row > b {
+  color: var(--foreground);
+}
+
+.ai-insight-row.ai-risk,
+.ai-insight-row.ai-risk > b {
+  color: #a84d27;
+}
+
+.dark .ai-insight-row.ai-risk,
+.dark .ai-insight-row.ai-risk > b {
+  color: var(--accent-strong);
+}
+
+/* ── Unlabeled natural-language short review (InsightCard) ──── */
+/* 复古批注短评：无字段标签，仅口吻 kicker + 主短评 + 可选补充 / 风险 / chip */
+.ai-note {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* 栏目级口吻标签（编辑短评 / 开发者点评 / 舆论温度计…），按 style 区分 */
+.ai-note-kicker {
+  align-self: flex-start;
+  margin-bottom: 1px;
+  padding: 1px 7px;
+  border: 1.5px solid #251d14;
+  border-radius: 2px;
+  background: color-mix(in srgb, #b9562d 16%, transparent);
+  font-family: var(--font-site-mono);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #b9562d;
+}
+
+.ai-note-lead {
+  font-size: 0.86rem;
+  line-height: 1.6;
+  font-weight: 600;
+  color: #241c13;
+}
+
+.ai-note-sub {
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: rgb(36 28 19 / 68%);
+}
+
+.ai-note-risk {
+  font-size: 0.82rem;
+  line-height: 1.55;
+  font-weight: 600;
+  color: #b0452a;
+}
+
+.ai-note-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 2px;
+}
+
+.ai-note-chip {
+  padding: 0 6px;
+  border: 1px solid #251d14;
+  border-radius: 2px;
+  font-family: var(--font-site-mono);
+  font-size: 0.66rem;
+  font-weight: 700;
+  line-height: 1.6;
+  color: #b9562d;
+}
+
+/* 紧凑变体（GitHub 左侧浮层用） */
+.ai-note--compact {
+  gap: 3px;
+}
+.ai-note--compact .ai-note-lead {
+  font-size: 0.82rem;
+}
+.ai-note--compact .ai-note-sub,
+.ai-note--compact .ai-note-risk {
+  font-size: 0.78rem;
+}
+
+/* Dark variants — 保持纸条质感但压暗 */
+.dark .ai-note-kicker {
+  border-color: var(--line);
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  color: var(--accent-strong);
+}
+.dark .ai-note-lead {
+  color: var(--foreground);
+}
+.dark .ai-note-sub {
+  color: color-mix(in srgb, var(--foreground) 72%, transparent);
+}
+.dark .ai-note-risk {
+  color: var(--accent-strong);
+}
+.dark .ai-note-chip {
+  border-color: var(--line);
+  color: var(--accent-strong);
+}
+
+/* ── GitHub 左侧批注浮层 ───────────────────────────────────── */
+.gh-row {
+  position: relative;
+}
+
+.gh-insight-pop {
+  position: absolute;
+  right: calc(100% + 12px);
+  top: 0;
+  z-index: 60;
+  width: 280px;
+  max-width: 78vw;
+  padding: 11px 13px;
+  border: 1.5px solid #251d14;
+  border-radius: 2px;
+  background: #f3e2bf;
+  box-shadow: 4px 4px 0 rgb(32 27 20 / 85%);
+}
+
+.dark .gh-insight-pop {
+  border-color: var(--line);
+  background: color-mix(in srgb, var(--surface) 78%, var(--sand) 22%);
+  box-shadow: 4px 4px 0 rgb(0 0 0 / 55%);
+}
+
+/* 窄屏（侧栏堆叠为单列）时，浮层退化为行下内联块，避免向左溢出 */
+@media (max-width: 1024px) {
+  .gh-insight-pop {
+    position: static;
+    width: auto;
+    max-width: 100%;
+    margin: 6px 0 2px;
+  }
+}
+
+/* ── X / Deals 行：hover 轻高亮 + 展开高亮（整行可点击） ──── */
+.x-row,
+.deal-row {
+  transition: background-color 140ms ease;
+}
+.x-row:hover,
+.deal-row:hover {
+  background: color-mix(in srgb, var(--surface) 60%, var(--sand) 18%);
+}
+.x-row.is-active,
+.deal-row.is-active {
+  background: color-mix(in srgb, var(--surface) 48%, var(--sand) 26%);
+}
+.x-row:focus-visible,
+.deal-row:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+.dark .x-row:hover,
+.dark .deal-row:hover,
+.dark .x-row.is-active,
+.dark .deal-row.is-active {
+  background: rgb(245 230 211 / 7%);
+}
+
+/* X / Deals 行内展开壳（复用 .ai-insight 纸条，去掉 Top Stories 的左缩进） */
+.x-insight.ai-insight,
+.deal-insight.ai-insight {
+  margin: 4px 0 8px;
+  max-width: 100%;
+  padding: 10px 12px;
+}
+
+@media (max-width: 720px) {
+  .top-stories-panel {
+    padding: 14px 13px 8px;
+  }
+
+  .story-index {
+    width: 1.7rem;
+    font-size: 0.95rem;
+  }
+
+  .ai-insight {
+    margin-left: 10px;
+    max-width: 100%;
+  }
+}
+
+/* ─── Brand icon (favicon / avatar, monogram fallback) ───── */
+.brand-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  overflow: hidden;
+  border: 1.5px solid var(--line);
+  border-radius: 3px;
+  background: var(--surface);
+  box-shadow: 1.5px 1.5px 0 color-mix(in srgb, var(--ink) 55%, transparent);
+  font-family: var(--font-site-mono);
+  font-weight: 800;
+  line-height: 1;
+  color: var(--accent-strong);
+}
+
+.brand-icon.is-round {
+  border-radius: 50%;
+}
+
+.brand-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 2px;
+}
+
+.brand-icon.is-round img {
+  padding: 0;
+  object-fit: cover;
+}
+
+/* Monogram fallback tiles — theme-aware tints, deterministic variety */
+.bif--0 { background: color-mix(in srgb, var(--rust) 22%, var(--surface)); color: var(--rust-dark); }
+.bif--1 { background: color-mix(in srgb, var(--olive) 22%, var(--surface)); color: var(--olive-dark); }
+.bif--2 { background: color-mix(in srgb, var(--sand) 32%, var(--surface)); color: var(--walnut); }
+.bif--3 { background: color-mix(in srgb, var(--olive-dark) 20%, var(--surface)); color: var(--olive-dark); }
+.bif--4 { background: color-mix(in srgb, var(--rust-dark) 20%, var(--surface)); color: var(--rust-dark); }
+
+/* ─── Top Stories — brand icon by headline + cover plate ──── */
+.story-brand {
+  align-self: center;
+}
+
+.story-cover {
+  flex: none;
+  align-self: flex-start;
+  width: 62px;
+  height: 45px;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--line);
+  border-radius: 3px;
+  background:
+    radial-gradient(circle at 30% 26%, rgb(36 31 24 / 7%) 0 1px, transparent 1.3px),
+    color-mix(in srgb, var(--surface) 62%, var(--sand) 38%);
+  background-size: 12px 12px, auto;
+  box-shadow: 2px 2px 0 color-mix(in srgb, var(--ink) 70%, transparent);
+  overflow: hidden;
+}
+
+.dark .story-cover {
+  background: color-mix(in srgb, var(--surface) 80%, var(--sand) 20%);
+}
+
+.story-cover .brand-icon {
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+.story-cover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ─── Section tabs (AI Tools / Research / Business) ── */
+.daily-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.daily-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 7px 12px;
+  border: 2px solid var(--line);
+  border-radius: 2px;
+  background: var(--surface);
+  color: var(--walnut);
+  font-family: var(--font-site-mono);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 color-mix(in srgb, var(--ink) 50%, transparent);
+  transition:
+    transform 120ms ease,
+    background-color 140ms ease,
+    color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.daily-tab:hover {
+  background: color-mix(in srgb, var(--surface) 64%, var(--sand));
+  color: var(--foreground);
+}
+
+.daily-tab:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.daily-tab.is-active {
+  background: var(--accent);
+  color: var(--paper-light);
+  box-shadow: var(--shadow-press);
+  transform: translate(1px, 1px);
+}
+
+.daily-tabbed-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.daily-tabpanel {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* ─── Section cards (tab content grid) ─────────────────────── */
+.section-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  height: 100%;
+  align-content: start;
+  grid-auto-flow: row dense; /* 整行展开抽屉插入后回填同行空位，避免留白 */
+}
+
+@media (min-width: 560px) {
+  .section-cards {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* 卡片与展开抽屉都是网格直接子项；卡片按行等高拉伸 */
+.section-cards > * {
+  display: flex;
+  flex-direction: column;
+}
+
+/* AI 短评抽屉跨整行插入（Fragment 平铺为 .section-cards 的直接子项） */
+.section-insight {
+  grid-column: 1 / -1;
+}
+.section-insight.ai-insight {
+  margin: 2px 0 6px;
+  max-width: 100%;
+}
+
+.section-card {
+  display: flex;
+  gap: 0.7rem;
+  height: 100%;
+  padding: 11px 12px;
+  border: 2px solid var(--line);
+  border-radius: 3px;
+  background: var(--surface);
+  box-shadow: 3px 3px 0 color-mix(in srgb, var(--ink) 75%, transparent);
+  cursor: pointer;
+  transition: transform 130ms ease, box-shadow 130ms ease;
+}
+
+.section-card:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 var(--ink);
+}
+
+.section-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.section-card.is-active {
+  border-color: var(--accent);
+  box-shadow: 5px 5px 0 var(--ink);
+}
+
+.section-card-icon {
+  margin-top: 1px;
+}
+
+.section-card-body {
+  min-width: 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.section-card-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 0.92rem;
+  font-weight: 800;
+  line-height: 1.3;
+  color: var(--foreground);
+}
+
+a.section-card-title:hover {
+  color: var(--accent-strong);
+}
+
+.section-card-sub {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--font-site-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--accent-strong);
+}
+
+.section-card-summary {
+  margin-top: 5px;
+  font-size: 0.8rem;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--walnut) 92%, transparent);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.section-card-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: auto;
+  padding-top: 7px;
+}
+
+@media (max-width: 720px) {
+  .story-cover {
+    display: none;
   }
 }

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>曼德博集合交互展示 - Agnes-2.0-Flash 代码生成</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<style>
+  body {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #1a1a2e;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  #container {
+    background: #16213e;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    text-align: center;
+  }
+  h1 {
+    color: #e94560;
+    margin: 0 0 8px 0;
+    font-size: 20px;
+  }
+  .info {
+    color: #a0a0b8;
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+  .info span { color: #e94560; font-weight: bold; }
+  canvas {
+    border-radius: 8px;
+    cursor: crosshair;
+    display: block;
+    margin: 0 auto;
+  }
+  .controls {
+    margin-top: 12px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  button {
+    background: #e94560;
+    color: white;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  button:hover { background: #ff6b81; }
+  button.secondary {
+    background: #0f3460;
+  }
+  button.secondary:hover { background: #1a4a7a; }
+  .stats {
+    color: #a0a0b8;
+    font-size: 12px;
+    margin-top: 8px;
+    line-height: 1.6;
+  }
+  .badge {
+    display: inline-block;
+    background: #e94560;
+    color: white;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+  }
+</style>
+</head>
+<body>
+<div id="container">
+  <div class="badge">🤖 Agnes-2.0-Flash 自动生成</div>
+  <h1>🔄 曼德博集合 · Mandelbrot Set</h1>
+  <div class="info">点击任意位置 <span>放大</span> 探索 · 右键 <span>缩小</span> · 代码由 AI 自动编写</div>
+  <div id="p5canvas"></div>
+  <div class="controls">
+    <button onclick="resetView()">⟲ 重置视图</button>
+    <button class="secondary" onclick="toggleTheme()">🎨 切换配色</button>
+    <button class="secondary" onclick="increaseIter()">➕ 增加迭代</button>
+    <button class="secondary" onclick="decreaseIter()">➖ 减少迭代</button>
+  </div>
+  <div class="stats" id="stats">
+    迭代: <span id="iterDisplay">100</span> 次 · 
+    坐标: <span id="coordDisplay">-2.0 ~ 1.0 + -1.2 ~ 1.2i</span>
+  </div>
+</div>
+
+<script>
+let xMin = -2.0, xMax = 1.0, yMin = -1.2, yMax = 1.2;
+let maxIter = 100;
+let palette = 'hot';
+let canvasW = 600, canvasH = 600;
+let mandelData = null;
+
+function setup() {
+  let c = createCanvas(canvasW, canvasH);
+  c.parent('p5canvas');
+  pixelDensity(1);
+  computeMandelbrot();
+}
+
+function computeMandelbrot() {
+  mandelData = [];
+  let w = width, h = height;
+  loadPixels();
+  for (let px = 0; px < w; px++) {
+    for (let py = 0; py < h; py++) {
+      let x = map(px, 0, w, xMin, xMax);
+      let y = map(py, 0, h, yMin, yMax);
+      let a = x, b = y;
+      let n = 0;
+      while (n < maxIter) {
+        let aa = a*a - b*b;
+        let bb = 2*a*b;
+        a = aa + x;
+        b = bb + y;
+        if (a*a + b*b > 4) break;
+        n++;
+      }
+      let idx = (px + py * w) * 4;
+      if (n === maxIter) {
+        pixels[idx] = 0; pixels[idx+1] = 0; pixels[idx+2] = 0;
+      } else {
+        let t = n / maxIter;
+        if (palette === 'hot') {
+          pixels[idx] = min(t*8*255, 255);
+          pixels[idx+1] = min(t*4*255, 255);
+          pixels[idx+2] = min(t*2*255, 255);
+        } else if (palette === 'cool') {
+          pixels[idx] = min(t*2*255, 255);
+          pixels[idx+1] = min(t*4*255, 255);
+          pixels[idx+2] = min(t*8*255, 255);
+        } else if (palette === 'rainbow') {
+          let hueVal = (t * 360) % 360;
+          let rgb = HSVtoRGB(hueVal/360, 0.8, 1.0);
+          pixels[idx] = rgb[0];
+          pixels[idx+1] = rgb[1];
+          pixels[idx+2] = rgb[2];
+        } else {
+          let v = min(t * 255, 255);
+          pixels[idx] = v; pixels[idx+1] = v; pixels[idx+2] = v;
+        }
+      }
+      pixels[idx+3] = 255;
+    }
+  }
+  updatePixels();
+  updateStats();
+}
+
+function HSVtoRGB(h, s, v) {
+  let r, g, b;
+  let i = floor(h * 6);
+  let f = h * 6 - i;
+  let p = v * (1 - s);
+  let q = v * (1 - f * s);
+  let t = v * (1 - (1 - f) * s);
+  switch (i % 6) {
+    case 0: r=v;g=t;b=p;break;
+    case 1: r=q;g=v;b=p;break;
+    case 2: r=p;g=v;b=t;break;
+    case 3: r=p;g=q;b=v;break;
+    case 4: r=t;g=p;b=v;break;
+    case 5: r=v;g=p;b=q;break;
+  }
+  return [r*255, g*255, b*255];
+}
+
+function mousePressed() {
+  if (mouseX < 0 || mouseX > width || mouseY < 0 || mouseY > height) return false;
+  let cx = map(mouseX, 0, width, xMin, xMax);
+  let cy = map(mouseY, 0, height, yMin, yMax);
+  let xRange = (xMax - xMin);
+  let yRange = (yMax - yMin);
+
+  if (mouseButton === LEFT) {
+    // Zoom in 2x
+    xMin = cx - xRange * 0.25;
+    xMax = cx + xRange * 0.25;
+    yMin = cy - yRange * 0.25;
+    yMax = cy + yRange * 0.25;
+    computeMandelbrot();
+  } else if (mouseButton === RIGHT) {
+    // Zoom out
+    xMin = cx - xRange * 0.75;
+    xMax = cx + xRange * 0.75;
+    yMin = cy - yRange * 0.75;
+    yMax = cy + yRange * 0.75;
+    computeMandelbrot();
+    return false; // prevent context menu
+  }
+}
+
+function resetView() {
+  xMin = -2.0; xMax = 1.0; yMin = -1.2; yMax = 1.2;
+  computeMandelbrot();
+}
+
+let palettes = ['hot', 'cool', 'rainbow', 'gray'];
+let palIdx = 0;
+function toggleTheme() {
+  palIdx = (palIdx + 1) % palettes.length;
+  palette = palettes[palIdx];
+  computeMandelbrot();
+}
+
+function increaseIter() {
+  maxIter = min(maxIter + 50, 1000);
+  computeMandelbrot();
+}
+
+function decreaseIter() {
+  maxIter = max(maxIter - 50, 10);
+  computeMandelbrot();
+}
+
+function updateStats() {
+  document.getElementById('iterDisplay').textContent = maxIter;
+  document.getElementById('coordDisplay').textContent =
+    `${xMin.toFixed(4)} ~ ${xMax.toFixed(4)} + ${yMin.toFixed(4)} ~ ${yMax.toFixed(4)}i`;
+}
+
+// Prevent right-click context menu
+document.addEventListener('contextmenu', e => e.preventDefault());
+</script>
+</body>
+</html>

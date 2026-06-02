@@ -9,9 +9,7 @@ const navItems = [
   { href: '/', label: '首页' },
   { href: '/writing', label: '写作' },
   { href: '/daily', label: 'Daily' },
-  { href: '/projects', label: '项目' },
   { href: '/friends', label: '友链' },
-  { href: '/subscribe', label: '订阅', featured: true },
 ];
 
 export function Header() {
@@ -37,9 +35,6 @@ export function Header() {
                 </span>
               </span>
             </Link>
-            <Link href="/about" className="hidden border-b-2 border-transparent text-xs font-black uppercase text-[color:var(--walnut)] transition-colors hover:border-[color:var(--line)] hover:text-[color:var(--foreground)] sm:inline">
-              About
-            </Link>
           </div>
 
           <nav className="hidden items-stretch border-2 border-[color:var(--line)] bg-[color:var(--paper-light)] md:flex">
@@ -49,10 +44,9 @@ export function Header() {
                 href={item.href}
                 className={cn(
                   'border-r-2 border-[color:var(--line)] px-5 py-2 text-sm font-extrabold transition last:border-r-0',
-                  item.featured && 'bg-[color:var(--accent)] text-[color:var(--paper-light)] shadow-[4px_4px_0_var(--ink)] hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-[color:var(--accent)] hover:shadow-[2px_2px_0_var(--ink)]',
                   pathname === item.href
                     ? 'bg-[color:var(--foreground)] text-[color:var(--paper-light)] shadow-[inset_0_-4px_0_var(--accent)]'
-                    : !item.featured && 'text-[color:var(--foreground)] hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-[color:var(--mustard)]'
+                    : 'text-[color:var(--foreground)] hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-[color:var(--mustard)]'
                 )}
               >
                 {item.label}
@@ -79,10 +73,9 @@ export function Header() {
               href={item.href}
                 className={cn(
                   'shrink-0 rounded-[2px] border-2 border-[color:var(--line)] px-4 py-2 text-sm font-extrabold shadow-[2px_2px_0_var(--ink)] transition',
-                  item.featured && 'bg-[color:var(--accent)] text-[color:var(--paper-light)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_var(--ink)]',
                   pathname === item.href
                     ? 'bg-[color:var(--foreground)] text-[color:var(--paper-light)]'
-                    : !item.featured && 'bg-[color:var(--surface)] text-[color:var(--foreground)] hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-[color:var(--mustard)] hover:shadow-[1px_1px_0_var(--ink)]'
+                    : 'bg-[color:var(--surface)] text-[color:var(--foreground)] hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-[color:var(--mustard)] hover:shadow-[1px_1px_0_var(--ink)]'
                 )}
               >
               {item.label}

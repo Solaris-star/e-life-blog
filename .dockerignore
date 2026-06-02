@@ -1,0 +1,12 @@
+node_modules/
+.next/
+daily_reports/
+logs/
+.env
+.env.local
+*.log
+.git
+.gitignore
+README.md
+AGENTS.md
+CLAUDE.md

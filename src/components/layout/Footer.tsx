@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 export function Footer() {
   return (
     <footer className="mt-auto">
@@ -14,28 +12,6 @@ export function Footer() {
           <p className="max-w-md text-sm font-bold leading-6 text-[color:var(--paper-light)]/85">
             记录技术、生活与思考，也保留一点复古的松弛和热气。
           </p>
-          <div className="flex flex-wrap gap-3">
-            <a
-              href="/rss.xml"
-              className="border border-[color:var(--paper-light)] px-3 py-1 text-sm font-black hover:bg-[color:var(--paper-light)] hover:text-[color:var(--foreground)]"
-            >
-              RSS
-            </a>
-            <Link href="/subscribe" className="border border-[color:var(--paper-light)] bg-[color:var(--accent)] px-3 py-1 text-sm font-black text-[color:var(--paper-light)] hover:bg-[color:var(--paper-light)] hover:text-[color:var(--foreground)]">
-              订阅频道
-            </Link>
-            <Link href="/register" className="border border-[color:var(--paper-light)] px-3 py-1 text-sm font-black hover:bg-[color:var(--paper-light)] hover:text-[color:var(--foreground)]">
-              注册
-            </Link>
-            <a
-              href="https://github.com"
-              target="_blank"
-              rel="noreferrer"
-              className="border border-[color:var(--paper-light)] px-3 py-1 text-sm font-black hover:bg-[color:var(--paper-light)] hover:text-[color:var(--foreground)]"
-            >
-              GitHub
-            </a>
-          </div>
         </div>
       </div>
     </footer>

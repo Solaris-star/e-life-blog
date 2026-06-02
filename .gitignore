@@ -36,6 +36,7 @@ member-private/
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.edgeone.example
 
 # vercel
 .vercel

@@ -17,8 +17,8 @@ const friends: Friend[] = [
     name: "L 站",
     url: "https://linux.do/",
     description: "Linux.do 社区",
-    logoSrc: "/images/friends/linuxdo-logo.png",
-    logoAlt: "LINUX DO",
+    logoSrc: "/images/friends/linuxdo-icon.png",
+    logoAlt: "Linux.do 图标",
     inviteUrl: "https://invite.linuxdo.org/",
     inviteNote: "国内直连，不要挂 VPN"
   }
@@ -49,10 +49,9 @@ export default function FriendsPage() {
             <Image
               src={friend.logoSrc}
               alt={friend.logoAlt}
-              width={120}
-              height={35}
-              className="h-[35px] w-[120px] shrink-0 object-contain"
-              style={{ width: 120, height: 35 }}
+              width={72}
+              height={72}
+              className="h-12 w-12 shrink-0 object-contain"
             />
             <div className="min-w-0 flex-1 overflow-hidden">
               <a
@@ -72,7 +71,7 @@ export default function FriendsPage() {
                 rel="noopener noreferrer"
                 className="mt-2 inline-flex w-fit max-w-full border-b-2 border-[color:var(--accent)] text-sm font-black text-[color:var(--accent-strong)] hover:border-[color:var(--line)] hover:text-[color:var(--foreground)]"
               >
-                自主邀请码
+                自助邀请码
               </a>
               <p className="mt-1 text-xs font-bold leading-5 text-[color:var(--walnut)]">
                 {friend.inviteNote}

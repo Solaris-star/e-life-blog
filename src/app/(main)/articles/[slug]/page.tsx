@@ -2,11 +2,13 @@ import { getPostBySlug, getPosts } from "@/lib/content";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import remarkWikiLink from "remark-wiki-link";
+import rehypeSlug from "rehype-slug";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, List } from "lucide-react";
 import type { ComponentPropsWithoutRef } from "react";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
+import TocSidebar from "@/components/layout/TocSidebar";
 
 export async function generateStaticParams() {
   const posts = getPosts();
@@ -48,7 +50,10 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
   };
 
   return (
-    <article className="mx-auto max-w-4xl pb-8">
+    <div className="relative mx-auto flex w-full max-w-7xl gap-6 lg:gap-10">
+      <TocSidebar />
+
+      <article className="min-w-0 flex-1 max-w-4xl pb-8">
       <Breadcrumbs
         items={[
           { label: "首页", href: "/" },
@@ -63,7 +68,17 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
         返回文章列表
       </Link>
 
-      <header className="mcm-panel mb-12 space-y-5 p-7 md:p-10">
+      <header className="mcm-panel mb-12 space-y-5 overflow-hidden p-0 md:p-0">
+        {post.meta.cover && (
+          <div className="relative aspect-[21/9] overflow-hidden border-b-2 border-[color:var(--line)] bg-[color:var(--paper-deep)]">
+            <img
+              src={post.meta.cover}
+              alt=""
+              className="h-full w-full object-cover"
+            />
+          </div>
+        )}
+        <div className="space-y-5 p-7 md:p-10">
         <p className="section-kicker">Post</p>
         <h1 className="text-4xl font-black leading-tight tracking-normal text-[color:var(--foreground)] md:text-6xl">
           {post.meta.title}
@@ -88,6 +103,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
             </div>
           )}
         </div>
+        </div>
       </header>
 
       <div className="post-body mx-auto">
@@ -103,10 +119,12 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
                   hrefTemplate: (permalink: string) => `/articles/${permalink}`
                 }]
               ],
+              rehypePlugins: [rehypeSlug],
             }
           }}
         />
       </div>
     </article>
+    </div>
   );
 }

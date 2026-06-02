@@ -1,107 +1,74 @@
-import Link from "next/link";
-import { ArrowRight, CalendarDays } from "lucide-react";
-import { dailyBriefs, dailyCategories } from "@/lib/site-data";
+// ─────────────────────────────────────────────────────
+// Daily Page — DailyBrief news feed
+// ─────────────────────────────────────────────────────
+import { DailyHero } from "./_components/DailyHero";
+import { TopStoriesList } from "./_components/TopStoriesList";
+import { RadarSidebar } from "./_components/RadarSidebar";
+import { TabbedSections } from "./_components/TabbedSections";
+import { getRadarData } from "@/lib/daily/getRadarData";
 
-export default function DailyPage() {
-  const today = dailyBriefs[0];
-  const history = dailyBriefs.slice(1);
+export const dynamic = "force-dynamic";
 
-  return (
-    <div className="space-y-10 pb-8">
-      <header className="mcm-panel relative overflow-hidden p-7 md:p-10">
-        <div className="absolute right-8 top-8 hidden h-24 w-24 rounded-full border-[18px] border-[color:rgb(217_118_66_/_24%)] md:block" />
-        <div className="space-y-4">
-          <p className="section-kicker">Daily</p>
-          <h1 className="text-4xl font-black tracking-normal text-[color:var(--foreground)] md:text-6xl">
-            每日简报
-          </h1>
-          <p className="max-w-2xl leading-8 text-[color:var(--walnut)]">
-            每天整理外部信息、一句话摘要和我的短评，不复制新闻全文。
-          </p>
-        </div>
-      </header>
-
-      <section className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-        <article className="mcm-card p-6 md:p-7">
-          <div className="mb-5 flex items-center justify-between gap-4">
-            <div>
-              <p className="section-kicker">Today</p>
-              <h2 className="mt-3 text-2xl font-black text-[color:var(--foreground)]">
-                今日简报
-              </h2>
-            </div>
-            <CalendarDays className="h-8 w-8 text-[color:var(--accent)]" />
-          </div>
-          <DailyBriefCard brief={today} highlight />
-        </article>
-
-        <aside className="mcm-panel p-6 md:p-7">
-          <p className="section-kicker">Categories</p>
-          <h2 className="mt-3 text-2xl font-black text-[color:var(--foreground)]">
-            分类
-          </h2>
-          <div className="mt-6 flex flex-wrap gap-3">
-            {dailyCategories.map((category) => (
-              <span key={category} className="mcm-tag">
-                {category}
-              </span>
-            ))}
-          </div>
-        </aside>
-      </section>
-
-      <section className="space-y-5">
-        <div>
-          <p className="section-kicker">History</p>
-          <h2 className="mt-3 text-2xl font-black text-[color:var(--foreground)]">
-            历史简报
-          </h2>
-        </div>
-        <div className="grid gap-5 md:grid-cols-2">
-          {history.map((brief) => (
-            <DailyBriefCard key={`${brief.date}-${brief.title}`} brief={brief} />
-          ))}
-        </div>
-      </section>
-    </div>
-  );
+function formatSyncDate(value: string): string {
+  return new Date(value).toLocaleDateString("zh-CN", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 }
 
-function DailyBriefCard({
-  brief,
-  highlight = false,
-}: {
-  brief: (typeof dailyBriefs)[number];
-  highlight?: boolean;
-}) {
+export default async function DailyPage() {
+  const radar = await getRadarData();
+
+  if (!radar) {
+    return (
+      <div className="space-y-10 pb-8">
+        <header className="mcm-panel p-8 text-center">
+          <p className="section-kicker">AI Roadmap</p>
+          <h1 className="mt-3 text-[2.2rem] font-black text-[var(--foreground)]">
+            年度 AI 关键节点路线图
+          </h1>
+          <p className="mt-3 text-[14px] text-[var(--walnut)]">
+            DailyBrief 后端暂时不可用，请稍后回来查看。
+          </p>
+        </header>
+      </div>
+    );
+  }
+
+  const { sections } = radar;
+
   return (
-    <div className={highlight ? "space-y-4" : "mcm-card p-6"}>
-      <div className="flex flex-wrap items-center gap-3 text-xs font-black uppercase text-[color:var(--walnut)]">
-        <time dateTime={brief.date}>
-          {new Date(brief.date).toLocaleDateString("zh-CN", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })}
-        </time>
-        <span className="mcm-tag">{brief.category}</span>
+    <div className="mx-auto max-w-[1200px] space-y-5 px-4 pb-10 pt-4 md:px-6">
+      {/* ═════ Hero ═══════════════════════════ */}
+      <DailyHero radar={radar} />
+
+      {/* ═════ 2-col grid (main + sidebar) ═════ */}
+      <div className="daily-grid">
+        {/* Left: Top Stories + compact sections */}
+        <div className="daily-main-col">
+          <TopStoriesList stories={sections.top_stories} />
+
+          {/* AI Tools / Research / Business / Risks — tabbed */}
+          <TabbedSections sections={sections} />
+        </div>
+
+        {/* Right: Radar Sidebar */}
+        <div className="daily-side-col">
+          <RadarSidebar sections={sections} />
+        </div>
       </div>
-      <h3 className="mt-4 text-xl font-black text-[color:var(--foreground)]">
-        {brief.title}
-      </h3>
-      <p className="mt-3 text-sm leading-7 text-[color:var(--walnut)]">
-        {brief.summary}
-      </p>
-      <div className="mt-4 border-l-4 border-[color:var(--mustard)] pl-4 text-sm leading-7 text-[color:var(--foreground)]">
-        {brief.comment}
-      </div>
-      <Link
-        href={brief.sourceUrl}
-        className="mt-4 inline-flex items-center gap-2 text-sm font-black text-[color:var(--accent-strong)]"
-      >
-        来源：{brief.sourceName}
-        <ArrowRight className="h-4 w-4" />
-      </Link>
+
+      {/* ═════ Footer ═════════════════════════ */}
+      <footer className="text-center text-[13px] text-[var(--walnut)]/80">
+        内容均来自原媒体，本站仅作摘要整理与回链。
+        {(radar.updated_at || radar.generated_at) && (
+          <>
+            {" "}更新于{" "}
+            {formatSyncDate(radar.updated_at || radar.generated_at)}
+          </>
+        )}
+      </footer>
     </div>
   );
 }

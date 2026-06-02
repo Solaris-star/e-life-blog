@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+/* Hide scrollbar utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 :root {
   --paper: #f3e5cf;
   --paper-light: #fff8ea;
@@ -70,7 +79,7 @@
 html {
   min-height: 100%;
   background: var(--background);
-  overflow-x: hidden;
+  overflow-x: clip;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }

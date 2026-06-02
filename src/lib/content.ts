@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
+import GithubSlugger from 'github-slugger';
 
 export interface PostMeta {
   title: string;
@@ -95,4 +96,29 @@ export function getPostsByTag(tag: string): Post[] {
   return getPosts().filter((post) =>
     post.meta.tags?.some((t) => t.toLowerCase() === tag.toLowerCase())
   );
+}
+
+export interface TocItem {
+  id: string;
+  text: string;
+  level: number;
+}
+
+export function extractHeadings(content: string): TocItem[] {
+  const headingRegex = /^(#{1,3})\s+(.+)$/gm;
+  const headings: TocItem[] = [];
+  const slugger = new GithubSlugger();
+
+  let match;
+  while ((match = headingRegex.exec(content)) !== null) {
+    const level = match[1].length;
+    const text = match[2].trim();
+    if (!text || text.length < 2) continue;
+
+    const id = slugger.slug(text);
+
+    headings.push({ id, text, level });
+  }
+
+  return headings;
 }

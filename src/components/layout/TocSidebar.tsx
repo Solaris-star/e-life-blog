@@ -1,248 +1,294 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
-import { List } from "lucide-react";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { createPortal } from "react-dom";
+import type { TocItem } from "@/lib/content";
 
-interface TocItem {
-  id: string;
-  text: string;
-  level: number;
+interface TocSidebarProps {
+  headings: TocItem[];
 }
 
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/\s+/g, "-")
-    .replace(/[^\w\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff-]/g, "")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "")
-    || "heading";
-}
-
-export default function TocSidebar() {
-  const [items, setItems] = useState<TocItem[]>([]);
-  const [activeId, setActiveId] = useState<string>("");
-  const [isCollapsed, setIsCollapsed] = useState(false);
+export default function TocSidebar({ headings }: TocSidebarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [retrying, setRetrying] = useState(true);
-  const retryRef = useRef(0);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
-  const scrollToHeading = useCallback((id: string) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
-      history.pushState(null, "", `#${id}`);
-      setMobileOpen(false);
-    }
+  const validHeadings = useMemo(() => {
+    return headings.filter((h) => h.id && h.id.length > 0);
+  }, [headings]);
+
+  useEffect(() => {
+    setMounted(true);
   }, []);
 
-  // Extract headings from article with retry
+  // Track screen size to decide mobile vs desktop
   useEffect(() => {
-    let cancelled = false;
-    retryRef.current = 0;
-
-    function tryExtract() {
-      if (cancelled) return;
-
-      // Try .post-body first, fall back to article
-      const postBody = document.querySelector(".post-body") || document.querySelector("article");
-      if (!postBody) {
-        // Retry up to 5 times (100, 300, 700, 1500, 3100ms)
-        retryRef.current++;
-        if (retryRef.current <= 5) {
-          setTimeout(tryExtract, 100 * Math.pow(2, retryRef.current - 1));
-        } else {
-          setRetrying(false);
-        }
-        return;
-      }
-
-      const headings = postBody.querySelectorAll("h1, h2, h3");
-      const tocItems: TocItem[] = [];
-      const seen = new Map<string, number>();
-
-      headings.forEach((h) => {
-        const level = parseInt(h.tagName[1], 10);
-        const text = (h.textContent || "").trim();
-        if (!text || text.length < 2) return;
-
-        let baseId = slugify(text);
-        let id = baseId;
-        let counter = seen.get(baseId) || 1;
-        if (counter > 1) {
-          id = `${baseId}-${counter}`;
-        }
-        seen.set(baseId, counter + 1);
-        h.id = id;
-
-        tocItems.push({ id, text, level });
-      });
-
-      setItems(tocItems);
-      setRetrying(false);
-    }
-
-    tryExtract();
-    return () => { cancelled = true; };
+    const check = () => setIsMobile(window.innerWidth < 1024);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
   }, []);
 
-  // IntersectionObserver for active heading
   useEffect(() => {
-    if (items.length === 0) return;
+    if (validHeadings.length === 0) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => {
-            const aTop = Math.abs(a.boundingClientRect.top);
-            const bTop = Math.abs(b.boundingClientRect.top);
-            return aTop - bTop;
-          });
-
+        const visible = entries.filter((e) => e.isIntersecting);
         if (visible.length > 0) {
-          setActiveId(visible[0].target.id);
+          const closest = visible.reduce((prev, curr) =>
+            curr.intersectionRatio > prev.intersectionRatio ? curr : prev
+          );
+          setActiveId(closest.target.id);
         }
       },
       {
-        rootMargin: "-80px 0px -60% 0px",
-        threshold: 0,
+        rootMargin: "-80px 0px -70% 0px",
+        threshold: [0, 0.1, 0.5, 1],
       }
     );
 
-    items.forEach((item) => {
-      const el = document.getElementById(item.id);
+    validHeadings.forEach((h) => {
+      const el = document.getElementById(h.id);
       if (el) observer.observe(el);
     });
 
     return () => observer.disconnect();
-  }, [items]);
+  }, [validHeadings]);
 
-  // Scroll active item into view within sidebar
   useEffect(() => {
-    if (!activeId) return;
-    const el = document.getElementById(`toc-${activeId}`);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+    if (mobileOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
     }
-  }, [activeId]);
-
-  // Close mobile TOC on Escape
-  useEffect(() => {
-    if (!mobileOpen) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setMobileOpen(false);
+    return () => {
+      document.body.style.overflow = "";
     };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
   }, [mobileOpen]);
 
-  if (retrying) return null;
-  if (items.length === 0) return null;
+  // Close mobile drawer on resize to desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setMobileOpen(false);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
-  const tocList = (
-    <ul className="space-y-0.5 border-l-2 border-[color:var(--line)]">
-      {items.map((item) => (
-        <li key={item.id}>
-          <button
-            onClick={() => scrollToHeading(item.id)}
-            id={`toc-${item.id}`}
-            className={`
-              group flex w-full items-start text-left
-              transition-all duration-150
-              border-l-2 -ml-[2px]
-              py-1 pr-2
-              leading-snug
-              ${
-                item.level === 1
-                  ? "pl-3 text-sm font-bold"
-                  : item.level === 2
-                  ? "pl-6 text-xs"
-                  : "pl-10 text-xs text-[color:var(--walnut)]"
-              }
-              ${
-                activeId === item.id
-                  ? "border-[color:var(--accent-strong)] text-[color:var(--accent-strong)] font-bold"
-                  : "border-transparent text-[color:var(--walnut)] hover:border-[color:var(--mustard)] hover:text-[color:var(--foreground)]"
-              }
-            `}
-          >
-            <span className="truncate">{item.text}</span>
-          </button>
-        </li>
-      ))}
-    </ul>
+  const handleAnchorClick = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+      e.preventDefault();
+      const el = document.getElementById(id);
+      if (el) {
+        const headerHeight = 100;
+        const elementTop = el.getBoundingClientRect().top + window.scrollY;
+        const targetScroll = elementTop - headerHeight;
+        window.scrollTo({ top: targetScroll, behavior: "smooth" });
+        history.pushState(null, "", `#${id}`);
+        setMobileOpen(false);
+        setActiveId(id);
+      }
+    },
+    []
   );
+
+  if (validHeadings.length === 0) return null;
 
   return (
     <>
-      {/* Mobile floating button - visible below md */}
-      <button
-        onClick={() => setMobileOpen(true)}
-        className="fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full border-2 border-[color:var(--line)] bg-[color:var(--accent)] text-white shadow-[3px_3px_0_var(--ink)] md:hidden"
-        aria-label="打开目录"
+      {/* ========== Desktop TOC: fixed sidebar on the left ========== */}
+      {/* Use CSS media query (hidden lg:block) to avoid hydration mismatch */}
+      <aside
+        className="hidden lg:block"
+        style={{
+          position: "fixed",
+          top: "110px",
+          left: "max(1rem, calc((100vw - 90rem) / 2 + 1rem))",
+          width: "14rem",
+          maxHeight: "calc(100vh - 120px)",
+          overflowY: "auto",
+          zIndex: 30,
+        }}
       >
-        <List className="h-5 w-5" />
-      </button>
-
-      {/* Mobile overlay */}
-      {mobileOpen && (
-        <div className="fixed inset-0 z-50 flex md:hidden">
-          <div
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-            onClick={() => setMobileOpen(false)}
-          />
-          <div className="relative ml-auto h-full w-72 max-w-[85vw] overflow-y-auto border-l-2 border-[color:var(--line)] bg-[color:var(--paper)] p-5 shadow-[-5px_0_0_var(--ink)]">
-            <div className="mb-4 flex items-center justify-between">
-              <span className="text-sm font-bold text-[color:var(--foreground)]">📋 目录</span>
-              <button
-                onClick={() => setMobileOpen(false)}
-                className="text-lg font-black text-[color:var(--walnut)] hover:text-[color:var(--foreground)]"
-              >
-                ✕
-              </button>
+          <div className="scrollbar-hide">
+            <div className="flex items-center gap-2 mb-4 pb-2 border-b border-border/60">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
+                <line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="14" y2="12"/><line x1="4" y1="18" x2="8" y2="18"/>
+              </svg>
+              <span className="font-semibold text-base text-foreground tracking-wide">目录</span>
             </div>
-            {tocList}
+            <ul className="space-y-0.5">
+              {validHeadings.map((item) => {
+                const isActive = activeId === item.id;
+                return (
+                  <li key={item.id} className={item.level === 1 ? "" : item.level === 2 ? "ml-4" : "ml-8"}>
+                    <a
+                      href={`#${item.id}`}
+                      onClick={(e) => handleAnchorClick(e, item.id)}
+                      className={`block py-1.5 px-2 rounded-md transition-all duration-150 ${
+                        item.level === 1 ? "text-[17px] font-semibold text-foreground" :
+                        item.level === 2 ? "text-[16px] font-medium text-muted-foreground" :
+                        "text-[15px] font-normal text-muted-foreground/60"
+                      } ${isActive ? "bg-primary/8 text-primary" : "hover:text-foreground hover:bg-muted/60"}`}
+                    >
+                      <span className="truncate block">{item.text}</span>
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
           </div>
-        </div>
+        </aside>
+
+      {/* ========== Mobile/Tablet: floating button + drawer ========== */}
+      {mounted && isMobile && !mobileOpen && createPortal(
+        <button
+          onClick={() => setMobileOpen(true)}
+          aria-label="打开目录"
+          type="button"
+          style={{
+            position: "fixed",
+            bottom: "2rem",
+            right: "1.5rem",
+            zIndex: 99999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "3.5rem",
+            height: "3.5rem",
+            borderRadius: "9999px",
+            border: "2px solid var(--line)",
+            backgroundColor: "var(--accent)",
+            color: "var(--paper-light)",
+            boxShadow: "3px 3px 0 var(--ink)",
+            cursor: "pointer",
+            padding: 0,
+            outline: "none",
+            touchAction: "manipulation",
+            WebkitTapHighlightColor: "transparent",
+          }}
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 6h16M4 12h16M4 18h7" />
+          </svg>
+        </button>,
+        document.body
       )}
 
-      {/* Desktop sidebar - sticky, follows scroll with auto-highlight */}
-<nav
-        className="
-          hidden md:block
-          w-56 flex-shrink-0
-          py-2 pr-4
-          text-sm
-          sticky top-28
-          self-start
-          max-h-[calc(100vh-8rem)]
-          overflow-y-auto
-          overscroll-contain
-        "
-        aria-label="文章目录"
-      >
-        <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="mb-3 flex w-full items-center gap-2 text-xs font-bold uppercase tracking-wider text-[color:var(--walnut)] hover:text-[color:var(--accent-strong)] transition-colors"
+      {mounted && isMobile && mobileOpen && createPortal(
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 99999,
+            display: "flex",
+            justifyContent: "flex-end",
+          }}
         >
-          <span className="text-base leading-none">📋</span>
-          <span>{isCollapsed ? "展开目录" : "目录"}</span>
-          <svg
-            className={`h-3 w-3 transition-transform ${isCollapsed ? "rotate-180" : ""}`}
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="m6 9 6 6 6-6" />
-          </svg>
-        </button>
+          {/* Overlay */}
+          <div
+            onClick={() => setMobileOpen(false)}
+            style={{
+              position: "absolute",
+              inset: 0,
+              backgroundColor: "rgba(0,0,0,0.4)",
+            }}
+          />
 
-        {!isCollapsed && tocList}
-      </nav>
+          {/* Drawer panel */}
+          <div
+            className="scrollbar-hide"
+            style={{
+              position: "relative",
+              zIndex: 1,
+              width: "min(20rem, 85vw)",
+              height: "100%",
+              backgroundColor: "var(--paper-light)",
+              borderLeft: "3px solid var(--line)",
+              boxShadow: "-5px 0 0 var(--ink)",
+              overflowY: "auto",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            {/* Header */}
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: "1rem",
+              borderBottom: "2px solid var(--line)",
+              flexShrink: 0,
+            }}>
+              <span style={{ fontWeight: 800, fontSize: "1.125rem", color: "var(--ink)" }}>目录</span>
+              <button
+                onClick={() => setMobileOpen(false)}
+                type="button"
+                aria-label="关闭目录"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "2.25rem",
+                  height: "2.25rem",
+                  border: "2px solid var(--line)",
+                  backgroundColor: "var(--paper-deep)",
+                  borderRadius: "0.125rem",
+                  cursor: "pointer",
+                  padding: 0,
+                }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Items */}
+            <div style={{ padding: "0.75rem", flex: 1 }}>
+              {validHeadings.map((item) => {
+                const isActive = activeId === item.id;
+                return (
+                  <a
+                    key={item.id}
+                    href={`#${item.id}`}
+                    onClick={(e) => handleAnchorClick(e, item.id)}
+                    style={{
+                      display: "block",
+                      padding: "0.75rem",
+                      borderRadius: "0.125rem",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                      cursor: "pointer",
+                      WebkitTapHighlightColor: "transparent",
+                      marginLeft: item.level === 1 ? 0 : item.level === 2 ? "1rem" : "2rem",
+                      fontSize: item.level === 1 ? "17px" : item.level === 2 ? "16px" : "15px",
+                      fontWeight: item.level === 1 ? 700 : item.level === 2 ? 600 : 400,
+                      color: isActive
+                        ? "var(--paper-light, #fff8ea)"
+                        : item.level === 1
+                          ? "var(--ink, #241f18)"
+                          : "var(--ink-soft, #5e5548)",
+                      backgroundColor: isActive ? "var(--accent, #d96d3a)" : "transparent",
+                      border: isActive ? "2px solid var(--line, #2a241d)" : "2px solid transparent",
+                      boxShadow: isActive ? "2px 2px 0 var(--ink, #241f18)" : "none",
+                      textDecoration: "none",
+                    }}
+                  >
+                    {item.text}
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </>
   );
 }

@@ -3,17 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3001",
+    "dev": "next dev -p 5000",
     "prebuild": "node scripts/verify-friends-links.mjs",
     "build": "next build",
     "deploy:blog": "docker compose -f /Users/solaris/AI/docker-compose.yml up -d --build --no-deps blog && npm run edgeone:purge",
     "edgeone:purge": "node scripts/purge-edgeone-cache.mjs",
-    "start": "next start -p 3001",
+    "start": "next start -p 5000",
     "lint": "eslint"
   },
   "dependencies": {
     "clsx": "^2.1.1",
     "date-fns": "^4.2.1",
+    "github-slugger": "^2.0.0",
     "gray-matter": "^4.0.3",
     "lucide-react": "^1.16.0",
     "next": "16.2.6",

@@ -11,24 +11,10 @@ interface TocSidebarProps {
 export default function TocSidebar({ headings }: TocSidebarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [mounted, setMounted] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
 
   const validHeadings = useMemo(() => {
     return headings.filter((h) => h.id && h.id.length > 0);
   }, [headings]);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Track screen size to decide mobile vs desktop
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 1024);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
 
   useEffect(() => {
     if (validHeadings.length === 0) return;
@@ -101,7 +87,6 @@ export default function TocSidebar({ headings }: TocSidebarProps) {
   return (
     <>
       {/* ========== Desktop TOC: fixed sidebar on the left ========== */}
-      {/* Use CSS media query (hidden lg:block) to avoid hydration mismatch */}
       <aside
         className="hidden lg:block"
         style={{
@@ -144,42 +129,23 @@ export default function TocSidebar({ headings }: TocSidebarProps) {
           </div>
         </aside>
 
-      {/* ========== Mobile/Tablet: floating button + drawer ========== */}
-      {mounted && isMobile && !mobileOpen && createPortal(
+      {/* ========== Mobile/Tablet: floating button (CSS-controlled visibility) ========== */}
+      {!mobileOpen && (
         <button
           onClick={() => setMobileOpen(true)}
           aria-label="打开目录"
           type="button"
-          style={{
-            position: "fixed",
-            bottom: "2rem",
-            right: "1.5rem",
-            zIndex: 99999,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            width: "3.5rem",
-            height: "3.5rem",
-            borderRadius: "9999px",
-            border: "2px solid var(--line)",
-            backgroundColor: "var(--accent)",
-            color: "var(--paper-light)",
-            boxShadow: "3px 3px 0 var(--ink)",
-            cursor: "pointer",
-            padding: 0,
-            outline: "none",
-            touchAction: "manipulation",
-            WebkitTapHighlightColor: "transparent",
-          }}
+          className="fixed bottom-8 right-6 z-[99999] flex h-14 w-14 items-center justify-center rounded-full border-2 border-[color:var(--line)] bg-[color:var(--accent)] text-[color:var(--paper-light)] shadow-[3px_3px_0_var(--ink)] lg:hidden"
+          style={{ touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M4 6h16M4 12h16M4 18h7" />
           </svg>
-        </button>,
-        document.body
+        </button>
       )}
 
-      {mounted && isMobile && mobileOpen && createPortal(
+      {/* ========== Mobile/Tablet: drawer overlay (portal to body) ========== */}
+      {mobileOpen && createPortal(
         <div
           style={{
             position: "fixed",

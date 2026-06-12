@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { ArrowRight, Archive, Boxes, Search, Users } from "lucide-react";
+import { ArrowRight, BookOpen, Crown, LockKeyhole, UserRound } from "lucide-react";
 import { getCurrentUser } from "@/lib/member-auth";
 
 const benefits = [
-  { title: "资料库", text: "整理过的文档、清单和模板。", icon: Archive },
-  { title: "会员搜索", text: "只搜索你有权限访问的会员内容。", icon: Search },
-  { title: "群组入口", text: "短时邀请码进入小范围交流。", icon: Users },
-  { title: "项目资料", text: "项目记录、扩展 Daily 和实践材料。", icon: Boxes },
+  { title: "公开文章", text: "现有博客内容继续免费阅读，不登录也能看。", icon: BookOpen },
+  { title: "登录会员", text: "解锁标记为 free 的会员文章。", icon: UserRound },
+  { title: "Basic / Pro", text: "按等级解锁更深入的文章正文。", icon: LockKeyhole },
+  { title: "Lifetime", text: "保留最高等级文章的长期访问权。", icon: Crown },
 ];
 
 export const dynamic = "force-dynamic";
@@ -22,14 +22,14 @@ export default async function SubscribePage() {
         <div className="space-y-6 p-6 md:p-9 lg:border-r-[3px] lg:border-[color:var(--line)]">
           <p className="section-kicker">SUBSCRIBE / 订阅频道</p>
           <h1 className="press-title text-[clamp(2.8rem,11vw,6.2rem)] text-[color:var(--foreground)]">
-            会员订阅频道
+            会员文章订阅
           </h1>
           <p className="max-w-2xl text-base font-bold leading-8 text-[color:var(--foreground)] md:text-lg">
-            公开博客继续正常阅读和 RSS 订阅。会员频道放资料库、群组入口、会员搜索和扩展内容。
+            公开博客继续正常阅读。会员体系暂时只用于文章正文分级解锁；其它未完成模块会等真实内容接好后再开放。
           </p>
           <div className="flex flex-wrap gap-4">
             <Link href={isActive ? "/member" : "/register"} className="mcm-button mcm-button-primary bg-[color:var(--accent)]">
-              {isActive ? "进入会员频道" : "成为订阅者"}
+              {isActive ? "进入会员文章" : "注册会员账号"}
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link href="/login" className="mcm-button mcm-button-secondary">
@@ -44,7 +44,7 @@ export default async function SubscribePage() {
         <div className="p-5 md:p-8">
           <div className="mcm-panel h-full p-6">
             <p className="mono-label text-sm font-black text-[color:var(--accent-strong)]">
-              FILE NO. SUB-2026-001
+              ARTICLE ACCESS LEVELS
             </p>
             <div className="mt-8 grid gap-4">
               {benefits.map((item) => {

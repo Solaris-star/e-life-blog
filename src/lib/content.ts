@@ -1,3 +1,5 @@
+import "server-only";
+
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
@@ -11,7 +13,10 @@ export interface PostMeta {
   published?: boolean;
   featured?: boolean;
   cover?: string;
+  access?: PostAccessLevel;
 }
+
+export type PostAccessLevel = 'public' | 'free' | 'basic' | 'pro' | 'lifetime';
 
 export interface Post {
   slug: string;
@@ -32,6 +37,13 @@ function readMDXFile(filePath: string) {
   return matter(rawContent);
 }
 
+function normalizePostAccess(value: unknown): PostAccessLevel {
+  if (value === 'free' || value === 'basic' || value === 'pro' || value === 'lifetime') {
+    return value;
+  }
+  return 'public';
+}
+
 function extractPostData(dir: string, filename: string): Post {
   const filePath = path.join(dir, filename);
   const { data, content } = readMDXFile(filePath);
@@ -49,6 +61,7 @@ function extractPostData(dir: string, filename: string): Post {
       published: data.published !== false,
       featured: data.featured === true,
       ...data,
+      access: normalizePostAccess(data.access),
     },
     content,
   };
@@ -104,6 +117,23 @@ export interface TocItem {
   level: number;
 }
 
+function cleanHeadingText(text: string) {
+  return text
+    .replace(/!\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/[*_~]+/g, "")
+    .trim();
+}
+
+export function getPostListDescription(post: Post, canRead: boolean = false) {
+  if (post.meta.access && post.meta.access !== "public") {
+    if (!canRead) return "";
+    return post.meta.description ?? "";
+  }
+  return post.meta.description ?? "";
+}
+
 export function extractHeadings(content: string): TocItem[] {
   const headingRegex = /^(#{1,3})\s+(.+)$/gm;
   const headings: TocItem[] = [];
@@ -112,7 +142,7 @@ export function extractHeadings(content: string): TocItem[] {
   let match;
   while ((match = headingRegex.exec(content)) !== null) {
     const level = match[1].length;
-    const text = match[2].trim();
+    const text = cleanHeadingText(match[2].trim());
     if (!text || text.length < 2) continue;
 
     const id = slugger.slug(text);

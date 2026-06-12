@@ -1,0 +1,144 @@
+/* ─── 想法区「手帐便签」局部样式 ──────────────── */
+
+/* 便签卡片:奇偶交替微倾,悬停回正(弹性缓动) */
+.mcm-card.idea-note {
+  transform: rotate(var(--note-tilt, 0deg));
+  transition:
+    transform var(--dur-mid) var(--ease-spring),
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease;
+}
+
+.ideas-item:nth-child(odd) .idea-note {
+  --note-tilt: -0.4deg;
+}
+
+.ideas-item:nth-child(even) .idea-note {
+  --note-tilt: 0.4deg;
+}
+
+.mcm-card.idea-note:hover {
+  transform: translate(-2px, -2px) rotate(0deg);
+}
+
+/* 搜索 / 固定链接锚点定位时高亮目标便签 */
+.mcm-card.idea-note:target {
+  --note-tilt: 0deg;
+  border-color: var(--accent);
+  box-shadow: 5px 5px 0 var(--accent-strong);
+}
+
+/* 日期戳章 */
+.idea-stamp {
+  display: inline-flex;
+  align-items: center;
+  border: 2px solid var(--line);
+  border-radius: 2px;
+  background: var(--surface-muted);
+  padding: 0.3rem 0.65rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--walnut);
+  box-shadow: 2px 2px 0 var(--ink);
+  transform: rotate(-1.4deg);
+}
+
+/* 固定链接按钮:44px 触控热区,视觉保持紧凑 */
+.idea-permalink {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin: -0.6rem -0.6rem 0 0;
+  border: 2px solid transparent;
+  border-radius: 2px;
+  color: var(--walnut);
+  transition:
+    color var(--dur-fast) var(--ease-out-soft),
+    border-color var(--dur-fast) var(--ease-out-soft),
+    background-color var(--dur-fast) var(--ease-out-soft),
+    box-shadow var(--dur-fast) var(--ease-out-soft),
+    transform var(--dur-fast) var(--ease-out-soft);
+}
+
+.idea-permalink:hover {
+  color: var(--accent-strong);
+  border-color: var(--line);
+  background: var(--surface-muted);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+.idea-permalink:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--ink);
+}
+
+.idea-permalink:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* 年份分隔线 */
+.idea-year-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  color: var(--walnut);
+}
+
+.idea-year-divider::after {
+  content: "";
+  flex: 1;
+  height: 2px;
+  background: var(--line);
+}
+
+/* 「花园刚开垦」纯 CSS 插画:方形苗圃 + 星芒花 + 茎 + 地面 */
+.idea-garden-art {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 7rem;
+  height: 7rem;
+  border: 2px solid var(--line);
+  border-radius: 2px;
+  background: var(--paper-light);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.idea-garden-art .starburst {
+  margin-bottom: 1.5rem;
+}
+
+.idea-garden-art::before {
+  content: "";
+  position: absolute;
+  bottom: 0.85rem;
+  left: 50%;
+  width: 2px;
+  height: 1.8rem;
+  background: var(--olive);
+  transform: translateX(-50%);
+}
+
+.idea-garden-art::after {
+  content: "";
+  position: absolute;
+  right: 0.8rem;
+  bottom: 0.85rem;
+  left: 0.8rem;
+  height: 3px;
+  border-radius: 1px;
+  background: var(--olive);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mcm-card.idea-note,
+  .idea-permalink {
+    transition-duration: 1ms;
+  }
+}

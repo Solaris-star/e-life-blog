@@ -15,8 +15,12 @@ import {
   Server,
   Sparkles,
 } from "lucide-react";
-import { getIdeas, getPosts, type Post } from "@/lib/content";
+import { getIdeas, getPostListDescription, getPosts, type Post } from "@/lib/content";
+import { getCurrentUser, type MemberUser } from "@/lib/member-auth";
+import { canReadPost } from "@/lib/post-access";
 import HeroGardenImage from "@/components/HeroGardenImage";
+import { FluidInk } from "@/components/FluidInk";
+import { Reveal } from "@/components/layout/Reveal";
 import { getRadarData } from "@/lib/daily/getRadarData";
 import type { TopStoryItem } from "./daily/types";
 
@@ -75,6 +79,7 @@ export default async function Home() {
   const latestPost = posts[0];
   const compactPosts = posts.slice(1, 8);
   const latestDaily = topStories[0];
+  const user = await getCurrentUser();
 
   return (
     <div className="archive-sheet overflow-hidden">
@@ -86,7 +91,7 @@ export default async function Home() {
       />
 
       <section className="grid gap-0 border-b-[3px] border-[color:var(--line)] lg:grid-cols-[2fr_1fr]">
-        <RecentArticles posts={posts} compactPosts={compactPosts} />
+        <RecentArticles posts={posts} compactPosts={compactPosts} user={user} />
         <aside className="grid gap-0 border-t-[3px] border-[color:var(--line)] lg:border-l-[3px] lg:border-t-0">
           <DailyPreview stories={topStories} />
           <ThoughtPreview idea={latestIdea} />
@@ -101,8 +106,16 @@ export default async function Home() {
 
 function HeroSection() {
   return (
-    <section className="grid min-h-[25rem] items-center border-b-[3px] border-[color:var(--line)] lg:grid-cols-[42fr_58fr]">
-      <div className="min-w-0 space-y-4 p-5 md:p-8 lg:py-9 lg:pr-2">
+    <section className="relative grid min-h-[25rem] items-center overflow-hidden border-b-[3px] border-[color:var(--line)] lg:grid-cols-[42fr_58fr]">
+      {/* 未来感流体墨水背景:移动端也可见,弥补原静态插画 <768px 隐藏的缺口 */}
+      <div aria-hidden className="absolute inset-0 z-0">
+        <FluidInk className="h-full w-full" />
+      </div>
+      <div
+        aria-hidden
+        className="absolute inset-0 z-0 bg-[linear-gradient(105deg,var(--paper)_0%,var(--paper)_26%,transparent_70%)]"
+      />
+      <div className="hero-stagger relative z-10 min-w-0 space-y-4 p-5 md:p-8 lg:py-9 lg:pr-2">
         <div className="section-kicker">{"// DIGITAL GARDEN"}</div>
         <div className="space-y-4">
           <h1 className="press-title max-w-full text-[clamp(2.55rem,6.6vw,5rem)] text-[color:var(--foreground)]">
@@ -124,7 +137,7 @@ function HeroSection() {
         </div>
       </div>
 
-      <div className="relative flex min-w-0 items-center justify-end overflow-visible px-2 pb-3 pt-0 md:px-4 md:pb-4 md:pt-1 lg:pb-2 lg:pl-0 lg:pr-0">
+      <div className="relative z-10 flex min-w-0 items-center justify-end overflow-visible px-2 pb-3 pt-0 md:px-4 md:pb-4 md:pt-1 lg:pb-2 lg:pl-0 lg:pr-0">
         <HeroGardenImage />
       </div>
     </section>
@@ -220,7 +233,7 @@ function InfoCell({
   );
 }
 
-function RecentArticles({ posts, compactPosts }: { posts: Post[]; compactPosts: Post[] }) {
+function RecentArticles({ posts, compactPosts, user }: { posts: Post[]; compactPosts: Post[]; user: MemberUser | null }) {
   const featured = posts[0];
 
   return (
@@ -261,7 +274,7 @@ function RecentArticles({ posts, compactPosts }: { posts: Post[]; compactPosts: 
                 {featured.meta.title}
               </h3>
               <p className="mt-3 line-clamp-3 text-sm font-bold leading-7 text-[color:var(--walnut)]">
-                {featured.meta.description || "一篇新的记录，关于技术、生活与持续整理。"}
+                {getPostListDescription(featured, canReadPost(user, featured.meta.access)) || "一篇新的记录，关于技术、生活与持续整理。"}
               </p>
             </div>
             <div className="mt-5 flex flex-wrap items-center gap-2 text-xs font-black text-[color:var(--walnut)]">
@@ -382,8 +395,10 @@ function TopicGrid() {
     <section className="border-b-[3px] border-[color:var(--line)] p-5 md:p-6">
       <SectionHeading title="写作专题" label="Topics" />
       <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        {topics.map((topic) => (
-          <TopicCard key={topic.title} topic={topic} />
+        {topics.map((topic, index) => (
+          <Reveal key={topic.title} index={index} stamp className="h-full">
+            <TopicCard topic={topic} />
+          </Reveal>
         ))}
       </div>
     </section>
@@ -396,7 +411,7 @@ function TopicCard({ topic }: { topic: (typeof topics)[number] }) {
   return (
     <Link
       href={topic.href}
-      className="group grid min-h-[8.5rem] grid-cols-[3rem_1fr_auto] items-center gap-3 border-2 border-[color:var(--line)] bg-[color:var(--surface)] p-4 shadow-[4px_4px_0_var(--ink)] transition hover:translate-y-[-1px] hover:shadow-[5px_5px_0_var(--ink)]"
+      className="group grid h-full min-h-[8.5rem] grid-cols-[3rem_1fr_auto] items-center gap-3 border-2 border-[color:var(--line)] bg-[color:var(--surface)] p-4 shadow-[4px_4px_0_var(--ink)] transition hover:translate-y-[-1px] hover:shadow-[5px_5px_0_var(--ink)]"
     >
       <span className="flex h-12 w-12 items-center justify-center border-2 border-[color:var(--line)] bg-[color:var(--accent)] text-[color:var(--paper-light)]">
         <Icon className="h-5 w-5" />
@@ -414,7 +429,8 @@ function TopicCard({ topic }: { topic: (typeof topics)[number] }) {
 function ArchivePanel() {
   return (
     <section className="border-b-[3px] border-[color:var(--line)] p-5 md:p-6">
-      <div className="mcm-panel flex min-h-[13rem] flex-col justify-between p-5 md:p-6">
+      <Reveal>
+        <div className="mcm-panel flex min-h-[13rem] flex-col justify-between p-5 md:p-6">
         <div>
           <div className="mb-4 flex items-center gap-3">
             <span className="flex h-11 w-11 items-center justify-center border-2 border-[color:var(--line)] bg-[color:var(--surface-muted)] text-[color:var(--foreground)]">
@@ -437,7 +453,8 @@ function ArchivePanel() {
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
-      </div>
+        </div>
+      </Reveal>
     </section>
   );
 }

@@ -927,8 +927,8 @@ function sanitizeRadar(radar: DailyRadarDTO): DailyRadarDTO {
     sections: {
       top_stories: (radar.sections?.top_stories ?? []).slice(0, 8).map(item => remapTopStory(item as unknown as BackendItem)),
       github_trending: (radar.sections?.github_trending ?? []).slice(0, 10).map(item => remapGithubTrending(item as unknown as BackendItem)),
-      x_ai_hotspots: (radar.sections?.x_ai_hotspots ?? []).slice(0, 8).map(item => remapXHotspot(item as unknown as BackendItem)),
-      ai_deals: (radar.sections?.ai_deals ?? []).slice(0, 5).map(item => remapAIDeal(item as unknown as BackendItem)),
+      x_ai_hotspots: (radar.sections?.x_ai_hotspots ?? []).slice(0, 12).map(item => remapXHotspot(item as unknown as BackendItem)),
+      ai_deals: (radar.sections?.ai_deals ?? []).slice(0, 6).map(item => remapAIDeal(item as unknown as BackendItem)),
       agent_podcasts: (radar.sections?.agent_podcasts ?? []).slice(0, 6).map(item => remapAgentPodcast(item as unknown as BackendItem)),
       ai_tools: (radar.sections?.ai_tools ?? []).slice(0, 8).map(item => remapAITool(item as unknown as BackendItem)),
       research_directions: (radar.sections?.research_directions ?? []).slice(0, 8).map(item => remapResearch(item as unknown as BackendItem)),

@@ -5,6 +5,7 @@ import { DailyHero } from "./_components/DailyHero";
 import { TopStoriesList } from "./_components/TopStoriesList";
 import { RadarSidebar } from "./_components/RadarSidebar";
 import { TabbedSections } from "./_components/TabbedSections";
+import { Reveal } from "@/components/layout/Reveal";
 import { getRadarData } from "@/lib/daily/getRadarData";
 
 export const dynamic = "force-dynamic";
@@ -41,16 +42,24 @@ export default async function DailyPage() {
   return (
     <div className="mx-auto max-w-[1200px] space-y-5 px-4 pb-10 pt-4 md:px-6">
       {/* ═════ Hero ═══════════════════════════ */}
-      <DailyHero radar={radar} />
+      {/* z-20:入场动画的 transform 会建立层叠上下文，抬高 hero
+          保证桌面端节点浮层始终盖在下方面板之上 */}
+      <Reveal className="relative z-20">
+        <DailyHero radar={radar} />
+      </Reveal>
 
       {/* ═════ 2-col grid (main + sidebar) ═════ */}
       <div className="daily-grid">
         {/* Left: Top Stories + compact sections */}
         <div className="daily-main-col">
-          <TopStoriesList stories={sections.top_stories} />
+          <Reveal index={1}>
+            <TopStoriesList stories={sections.top_stories} />
+          </Reveal>
 
           {/* AI Tools / Research / Business / Risks — tabbed */}
-          <TabbedSections sections={sections} />
+          <Reveal index={2}>
+            <TabbedSections sections={sections} />
+          </Reveal>
         </div>
 
         {/* Right: Radar Sidebar */}

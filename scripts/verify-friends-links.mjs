@@ -3,7 +3,7 @@ import { join } from "node:path";
 import sharp from "sharp";
 
 const projectRoot = process.cwd();
-const friendsPagePath = join(projectRoot, "src/app/(main)/friends/page.tsx");
+const resourcesPagePath = join(projectRoot, "src/app/(main)/resources/page.tsx");
 const linuxDoIconPath = join(projectRoot, "public/images/friends/linuxdo-icon.png");
 
 const requiredSnippets = [
@@ -33,25 +33,25 @@ function fail(message) {
   process.exit(1);
 }
 
-if (!existsSync(friendsPagePath)) {
-  fail(`Missing friends page: ${friendsPagePath}`);
+if (!existsSync(resourcesPagePath)) {
+  fail(`Missing resources page: ${resourcesPagePath}`);
 }
 
 if (!existsSync(linuxDoIconPath)) {
   fail(`Missing Linux.do icon: ${linuxDoIconPath}`);
 }
 
-const source = readFileSync(friendsPagePath, "utf8");
+const source = readFileSync(resourcesPagePath, "utf8");
 
 for (const snippet of requiredSnippets) {
   if (!source.includes(snippet)) {
-    fail(`Friends page is missing required snippet: ${snippet}`);
+    fail(`Resources page is missing required snippet: ${snippet}`);
   }
 }
 
 for (const snippet of forbiddenSnippets) {
   if (source.includes(snippet)) {
-    fail(`Friends page still contains mock data: ${snippet}`);
+    fail(`Resources page still contains mock data: ${snippet}`);
   }
 }
 
@@ -77,4 +77,4 @@ if ((linuxDoIconMetadata.width ?? 0) > 96 || (linuxDoIconMetadata.width ?? 0) < 
   );
 }
 
-console.log("[verify-friends-links] Friends page is pinned to Linux.do.");
+console.log("[verify-resources-page] Resources page is pinned to Linux.do.");

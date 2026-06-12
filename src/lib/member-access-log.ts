@@ -2,7 +2,7 @@ import "server-only";
 
 import { appendStoredAccessLog, getStoredAccessLogs } from "./member-store";
 
-export type AccessAction = "visit_member" | "search" | "view_resource" | "download" | "join_group";
+export type AccessAction = "visit_member" | "view_post" | "search" | "view_resource" | "download" | "join_group";
 
 export interface AccessLogEntry {
   action: AccessAction;
@@ -18,6 +18,6 @@ export async function logMemberAccess(entry: Omit<AccessLogEntry, "createdAt">) 
   });
 }
 
-export async function getAccessLogs() {
+export async function getAccessLogs(): Promise<AccessLogEntry[]> {
   return getStoredAccessLogs();
 }

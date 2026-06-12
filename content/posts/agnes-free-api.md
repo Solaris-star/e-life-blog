@@ -2,8 +2,8 @@
 title: "Agnes AI：全球首个无限免费 AI 图片、视频、文字 API（2026）"
 date: "2026-06-01T21:30:00Z"
 description: "新加坡 Sapiens AI 旗下 Agnes AI 无限期免费开放全模态 API！实测图片生成、视频生成、中文书法渲染效果，附交互式代码演示。"
-cover: "/images/agnes/agnes_image_2_1_inkwash.png"
-tags: ["AI研究", "免费API", "AgnesAI", "图片生成", "视频生成", "多模态", "打赏福利羊毛", "福利羊毛"]
+cover: /images/agnes/generated-covers-20260608/agnes-free-api-cover-gpt-image-2-v1.png
+tags: ["福利羊毛", "免费API", "AgnesAI", "图片生成", "视频生成", "多模态"]
 published: true
 ---
 

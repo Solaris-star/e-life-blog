@@ -2,7 +2,7 @@
 title: "每月白嫖 ChatGPT Plus：正规免费试用教程（每月 6+ 个账号）"
 date: "2026-05-31T20:00:00Z"
 description: "手把手教你利用虚拟信用卡 + PayPal 的免费试用通道，每月稳定开通多个 ChatGPT Plus 会员账号。"
-cover: "/images/free-gpt-plus/cover.jpg"
+cover: /images/agnes/generated-covers-20260608/free-gpt-plus-cover-gpt-image-2-v1.png
 tags: ["ChatGPT", "GPT Plus", "免费", "虚拟卡", "教程", "福利羊毛"]
 published: true
 ---

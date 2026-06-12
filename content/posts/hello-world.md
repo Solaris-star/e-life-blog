@@ -1,6 +1,7 @@
 ---
 title: "我的第一篇博客文章"
 date: "2026-05-19T10:00:00Z"
+cover: /images/agnes/generated-covers-20260608/hello-world-cover-gpt-image-2-v1.png
 description: "这是我使用 Next.js 和 Obsidian 构建的全新博客。"
 tags: ["Next.js", "Obsidian", "Blog"]
 published: true

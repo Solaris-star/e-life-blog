@@ -1,4 +1,4 @@
-import type { Post } from "@/lib/content";
+import { getPostListDescription, type Post } from "@/lib/content";
 import type { DailyBrief, ProjectItem } from "@/lib/site-data";
 
 export type RecommendationType = "article" | "daily" | "project" | "random";
@@ -27,7 +27,7 @@ export function getGardenRecommendations({
     id: `article-${post.slug}`,
     type: "article" as const,
     title: post.meta.title,
-    description: post.meta.description,
+    description: getPostListDescription(post),
     href: `/articles/${post.slug}`,
     label: "WRITING",
   }));

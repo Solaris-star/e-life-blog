@@ -1,18 +1,17 @@
 // ─────────────────────────────────────────────────────
 // DailyHero — 紧凑年度 AI 节点路线图
+// 状态 / 进度 / 当前焦点全部在服务端计算（基于 radar.date），
+// 时间轴交互（hover 浮层 / ≤1400px 内联详情条）交给客户端
+// RoadmapTimeline 渲染。
 // ─────────────────────────────────────────────────────
-import type { CSSProperties } from "react";
-import {
-  ArrowUpRight,
-  CalendarDays,
-  CheckCircle2,
-  Clock3,
-  Radio,
-  Route,
-} from "lucide-react";
+import { ArrowUpRight, CalendarDays, Route } from "lucide-react";
 import type { DailyRadarDTO } from "../types";
-
-type EventStatus = "ended" | "live" | "upcoming";
+import {
+  RoadmapTimeline,
+  StatusPill,
+  type EventStatus,
+  type RoadmapEventView,
+} from "./RoadmapTimeline";
 
 type RoadmapEvent = {
   name: string;
@@ -122,15 +121,6 @@ const AI_ROADMAP_EVENTS: RoadmapEvent[] = [
   },
 ];
 
-const STATUS_META: Record<
-  EventStatus,
-  { label: string; icon: typeof CheckCircle2 }
-> = {
-  ended: { label: "已结束", icon: CheckCircle2 },
-  live: { label: "进行中", icon: Radio },
-  upcoming: { label: "未开始", icon: Clock3 },
-};
-
 function getReferenceDate(date: string): Date {
   const parsed = new Date(`${date}T12:00:00`);
   return Number.isNaN(parsed.getTime()) ? new Date() : parsed;
@@ -181,9 +171,17 @@ export function DailyHero({ radar }: { radar: DailyRadarDTO }) {
     { ended: 0, live: 0, upcoming: 0 } satisfies Record<EventStatus, number>,
   );
 
-  const progressStyle = {
-    "--roadmap-progress": `${getProgress(events)}%`,
-  } as CSSProperties;
+  const timelineEvents: RoadmapEventView[] = events.map(
+    ({ name, label, location, category, signal, href, status }) => ({
+      name,
+      label,
+      location,
+      category,
+      signal,
+      href,
+      status,
+    }),
+  );
   const focusEvent =
     events.find((event) => event.status === "live") ??
     events.find((event) => event.status === "upcoming") ??
@@ -220,29 +218,11 @@ export function DailyHero({ radar }: { radar: DailyRadarDTO }) {
             </div>
           </div>
 
-          <nav className="ai-roadmap-track compact" style={progressStyle} aria-label={`${year} AI 关键节点`}>
-            <div className="ai-roadmap-rail" aria-hidden="true" />
-            <ol className="ai-roadmap-list">
-              {events.map((event) => (
-                <li className="ai-roadmap-node" data-status={event.status} key={event.name}>
-                  <a
-                    className="ai-roadmap-link"
-                    href={event.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label={`${event.name}，${STATUS_META[event.status].label}，打开官方页面`}
-                  >
-                    <span className="ai-roadmap-dot" aria-hidden="true" />
-                    <span className="ai-roadmap-label">
-                      <span className="ai-roadmap-date">{event.label}</span>
-                      <span className="ai-roadmap-name">{event.name}</span>
-                    </span>
-                    <RoadmapPopover event={event} />
-                  </a>
-                </li>
-              ))}
-            </ol>
-          </nav>
+          <RoadmapTimeline
+            events={timelineEvents}
+            progress={getProgress(events)}
+            year={year}
+          />
         </div>
 
         {focusEvent && (
@@ -280,45 +260,5 @@ export function DailyHero({ radar }: { radar: DailyRadarDTO }) {
         )}
       </div>
     </header>
-  );
-}
-
-function StatusPill({ status }: { status: EventStatus }) {
-  const meta = STATUS_META[status];
-  const Icon = meta.icon;
-
-  return (
-    <span className="ai-roadmap-status" data-status={status}>
-      <Icon className="h-3 w-3" aria-hidden="true" />
-      {meta.label}
-    </span>
-  );
-}
-
-function RoadmapPopover({ event }: { event: RoadmapEventWithStatus }) {
-  return (
-    <span className="ai-roadmap-popover" role="tooltip">
-      <span className="flex items-start justify-between gap-3">
-        <span>
-          <span className="block text-[13px] font-black leading-tight text-[var(--foreground)]">
-            {event.name}
-          </span>
-          <span className="mt-1 block font-mono text-[11px] font-bold text-[var(--walnut)]">
-            {event.label} · {event.location}
-          </span>
-        </span>
-        <StatusPill status={event.status} />
-      </span>
-      <span className="mt-2 block text-[12px] font-bold text-[var(--accent-strong)]">
-        {event.category}
-      </span>
-      <span className="mt-1.5 block text-[12px] leading-relaxed text-[var(--foreground)]/78">
-        {event.signal}
-      </span>
-      <span className="mt-2 inline-flex items-center gap-1 text-[11px] font-black text-[var(--accent-strong)]">
-        官方页面
-        <ArrowUpRight className="h-3 w-3" aria-hidden="true" />
-      </span>
-    </span>
   );
 }

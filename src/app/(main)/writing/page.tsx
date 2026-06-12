@@ -31,27 +31,22 @@ const writingTopics = [
     title: "海外支付",
     description: "海外账户、虚拟卡、订阅支付和风控注意事项，按实际开通流程整理。",
     articles: [
-      { title: "Fiat24 注册教程，助你开通各类订阅", href: "/articles/fiat24" },
+      { title: "Fiat24 注册教程（已失效，6月5日关停）", href: "/articles/fiat24" },
       { title: "Bybit Card 虚拟卡开卡教程", href: "/articles/bybit-card" },
-      { title: "每月白嫖 ChatGPT Plus", href: "/articles/free-gpt-plus" },
     ],
   },
   {
     title: "域名邮箱",
     description: "域名注册、邮箱账号、别名体系和长期账号资产管理。",
     articles: [
-      { title: "域名邮箱资料整理", href: "/tags/域名邮箱" },
-      { title: "账号体系相关记录", href: "/archive" },
-      { title: "查看全部文章", href: "/articles" },
+      { title: "免费域名盘点总结（2026版）", href: "/articles/free-domain-list" },
     ],
   },
   {
     title: "云服网络",
     description: "VPS、Cloudflare、自建服务、网络配置和部署过程中的实践记录。",
     articles: [
-      { title: "在 Windows 下使用 symlink 同步文件", href: "/articles/windows-symlink" },
-      { title: "云服网络实践记录", href: "/tags/云服网络" },
-      { title: "所有技术相关归档", href: "/archive" },
+      { title: "免费容器和类 VPS 平台推荐：能跑服务、能建站、能部署小项目", href: "/articles/free-container-vps-platforms" },
     ],
   },
   {
@@ -60,26 +55,18 @@ const writingTopics = [
     articles: [
       { title: "每月白嫖 ChatGPT Plus", href: "/articles/free-gpt-plus" },
       { title: "Agnes AI 免费 API", href: "/articles/agnes-free-api" },
-      { title: "福利羊毛线索归档", href: "/tags/福利羊毛" },
+      { title: "Sourceful Riverflow V2.5 OpenRouter 免费 AI 画图", href: "/articles/sourceful-riverflow-v25-openrouter-free-image" },
     ],
   },
   {
     title: "OPC实战",
     description: "OPC 清单、流程、复盘和执行笔记，保留可以重复使用的方法。",
-    articles: [
-      { title: "OPC 实战笔记", href: "/tags/OPC实战" },
-      { title: "流程与复盘归档", href: "/archive" },
-      { title: "所有文章", href: "/articles" },
-    ],
+    articles: [],
   },
   {
     title: "AI研究",
     description: "AI 工具、Agent、模型能力、多模态 API 和可复用工作流研究。",
-    articles: [
-      { title: "Agnes AI 免费 API", href: "/articles/agnes-free-api" },
-      { title: "每月白嫖 ChatGPT Plus", href: "/articles/free-gpt-plus" },
-      { title: "AI 研究笔记", href: "/tags/AI研究" },
-    ],
+    articles: [],
   },
 ];
 
@@ -94,20 +81,22 @@ function formatDate(date: string) {
 function pickTopic(tags: string[] | undefined) {
   const normalizedTags = tags?.map((tag) => tag.toLowerCase()) ?? [];
 
+  // 优先判断福利羊毛（避免被"虚拟卡"误判为海外支付）
+  if (normalizedTags.some((tag) => ["福利羊毛", "免费", "免费api", "gpt plus"].includes(tag))) {
+    return "福利羊毛";
+  }
+
+  // 优先判断域名邮箱（避免 cloudflare 邮箱被误判为云服网络）
+  if (normalizedTags.some((tag) => ["域名邮箱", "邮箱", "域名", "临时邮箱"].includes(tag))) {
+    return "域名邮箱";
+  }
+
   if (normalizedTags.some((tag) => ["海外支付", "fiat24", "bybit", "虚拟卡"].includes(tag))) {
     return "海外支付";
   }
 
-  if (normalizedTags.some((tag) => ["域名邮箱", "邮箱", "域名"].includes(tag))) {
-    return "域名邮箱";
-  }
-
   if (normalizedTags.some((tag) => ["云服网络", "vps", "cloudflare", "windows", "tips"].includes(tag))) {
     return "云服网络";
-  }
-
-  if (normalizedTags.some((tag) => ["福利羊毛", "免费", "免费api", "gpt plus"].includes(tag))) {
-    return "福利羊毛";
   }
 
   if (normalizedTags.some((tag) => ["opc实战", "opc"].includes(tag))) {
@@ -174,34 +163,6 @@ export default function WritingPage() {
         </div>
       </section>
 
-      <section id="topics" className={styles.sectionBlock} aria-labelledby="topics-title">
-        <div className={styles.sectionHeader}>
-          <p className={styles.sectionKicker}>Topics</p>
-          <h2 id="topics-title">写作专题</h2>
-        </div>
-        <div className={styles.topicGrid}>
-          {writingTopics.map((topic) => (
-            <article key={topic.title} className={styles.topicCard}>
-              <div>
-                <p className={styles.topicLabel}>专题</p>
-                <h3>{topic.title}</h3>
-                <p className={styles.topicDescription}>{topic.description}</p>
-              </div>
-              <ul className={styles.articleList}>
-                {topic.articles.map((article) => (
-                  <li key={`${topic.title}-${article.href}-${article.title}`}>
-                    <Link href={article.href}>{article.title}</Link>
-                  </li>
-                ))}
-              </ul>
-              <Link className={styles.topicButton} href={`/tags/${topic.title}`}>
-                进入专题
-              </Link>
-            </article>
-          ))}
-        </div>
-      </section>
-
       <section className={styles.sectionBlock} aria-labelledby="recent-title">
         <div className={styles.sectionHeader}>
           <p className={styles.sectionKicker}>Latest</p>
@@ -218,6 +179,38 @@ export default function WritingPage() {
               <strong>{item.title}</strong>
               <span>{item.topic}</span>
             </Link>
+          ))}
+        </div>
+      </section>
+
+      <section id="topics" className={styles.sectionBlock} aria-labelledby="topics-title">
+        <div className={styles.sectionHeader}>
+          <p className={styles.sectionKicker}>Topics</p>
+          <h2 id="topics-title">写作专题</h2>
+        </div>
+        <div className={styles.topicGrid}>
+          {writingTopics.map((topic) => (
+            <article key={topic.title} className={styles.topicCard}>
+              <div>
+                <p className={styles.topicLabel}>专题</p>
+                <h3>{topic.title}</h3>
+                <p className={styles.topicDescription}>{topic.description}</p>
+              </div>
+              {topic.articles.length > 0 && (
+                <>
+                <ul className={styles.articleList}>
+                {topic.articles.map((article) => (
+                  <li key={`${topic.title}-${article.href}-${article.title}`}>
+                    <Link href={article.href}>{article.title}</Link>
+                  </li>
+                ))}
+              </ul>
+                </>
+              )}
+              <Link className={styles.topicButton} href={`/tags/${topic.title}`}>
+                进入专题
+              </Link>
+            </article>
           ))}
         </div>
       </section>

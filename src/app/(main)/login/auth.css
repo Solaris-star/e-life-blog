@@ -1,0 +1,9 @@
+/* 登录 / 注册页:认证卡片弹性入场。
+   复用 globals.css 中的 rise-in 关键帧与动效 token;
+   reduced-motion 场景下不播放,内容直接可见。 */
+@media (prefers-reduced-motion: no-preference) {
+  .auth-rise {
+    animation: rise-in var(--dur-slow) var(--ease-spring) both;
+    animation-delay: calc(var(--auth-i, 0) * 90ms);
+  }
+}

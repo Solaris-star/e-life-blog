@@ -1,0 +1,33 @@
+/* 文章阅读页局部样式:目录抽屉入场动效(globals.css 只读,故落在页面级 css) */
+
+@keyframes toc-drawer-rise {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes toc-overlay-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .toc-drawer-enter {
+    animation: toc-drawer-rise var(--dur-mid) var(--ease-spring) both;
+  }
+
+  .toc-overlay-enter {
+    animation: toc-overlay-fade var(--dur-fast) var(--ease-out-soft) both;
+  }
+}

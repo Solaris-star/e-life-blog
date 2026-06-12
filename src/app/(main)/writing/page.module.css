@@ -9,7 +9,7 @@
   --writing-shadow: var(--ink);
   display: grid;
   gap: 40px;
-  padding: 28px;
+  padding: clamp(14px, 2.4vw, 28px);
   border: 2px solid var(--writing-border);
   background:
     radial-gradient(circle at 1px 1px, rgba(232, 220, 196, 0.08) 1px, transparent 0),
@@ -17,17 +17,17 @@
   background-size: 16px 16px;
   box-shadow: 7px 7px 0 var(--writing-shadow);
   color: var(--writing-ink);
-  overflow: hidden;
+  overflow: visible;
 }
 
 .writingHero {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 420px;
-  gap: 32px;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 420px);
+  gap: clamp(18px, 3vw, 32px);
   align-items: center;
   min-height: 260px;
-  padding: 48px 40px;
+  padding: clamp(28px, 4vw, 48px) clamp(18px, 3.5vw, 40px);
   border: 2px solid var(--border-color, var(--writing-border));
   background:
     radial-gradient(circle at 1px 1px, rgba(232, 220, 196, 0.08) 1px, transparent 0),
@@ -58,6 +58,7 @@
   margin: 0 0 18px;
   letter-spacing: 0;
   color: var(--writing-ink);
+  overflow-wrap: anywhere;
 }
 
 .heroCopy p {
@@ -66,6 +67,7 @@
   font-size: 16px;
   line-height: 1.8;
   margin: 0 0 24px;
+  overflow-wrap: anywhere;
 }
 
 .heroActions {
@@ -143,7 +145,7 @@
 
 .pathGrid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
   gap: 18px;
 }
 
@@ -192,7 +194,7 @@
 
 .topicGrid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
   gap: 22px;
 }
 
@@ -265,6 +267,7 @@
   padding: 16px 18px;
   color: var(--writing-ink);
   text-decoration: none;
+  min-width: 0;
 }
 
 .recentItem + .recentItem {
@@ -292,7 +295,7 @@
 
 .tagPanel {
   display: grid;
-  grid-template-columns: 220px minmax(0, 1fr);
+  grid-template-columns: minmax(160px, 220px) minmax(0, 1fr);
   gap: 24px;
   align-items: start;
   padding: 24px;
@@ -322,9 +325,18 @@
   color: var(--writing-muted);
 }
 
+.heroCopy,
+.pathCard,
+.topicCard,
+.recentItem,
+.tagPanel,
+.tagList {
+  min-width: 0;
+}
+
 @media (max-width: 1024px) {
   .writingHero {
-    grid-template-columns: minmax(0, 1fr) 320px;
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 320px);
     padding: 40px 28px;
   }
 
@@ -334,6 +346,25 @@
 
   .recentItem {
     grid-template-columns: 112px minmax(0, 1fr) 108px;
+  }
+}
+
+@media (max-width: 900px) {
+  .writingHero {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .heroArtwork {
+    display: none;
+  }
+
+  .recentItem {
+    grid-template-columns: 108px minmax(0, 1fr);
+  }
+
+  .recentItem span {
+    justify-self: start;
   }
 }
 
@@ -388,5 +419,43 @@
 
   .recentItem span {
     justify-self: start;
+  }
+}
+
+@media (max-width: 520px) {
+  .writingPage {
+    gap: 24px;
+    padding: 12px;
+    border-width: 2px;
+    box-shadow: 4px 4px 0 var(--writing-shadow);
+  }
+
+  .writingHero {
+    padding: 28px 18px;
+    box-shadow: 4px 4px 0 var(--writing-shadow);
+  }
+
+  .heroCopy h1 {
+    font-size: clamp(44px, 18vw, 72px);
+  }
+
+  .heroCopy p {
+    color: var(--writing-muted);
+  }
+
+  .heroActions a,
+  .topicButton {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .pathCard,
+  .topicCard,
+  .tagPanel {
+    box-shadow: 4px 4px 0 var(--writing-shadow);
+  }
+
+  .recentItem {
+    padding: 14px 12px;
   }
 }

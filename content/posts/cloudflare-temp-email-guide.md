@@ -2,8 +2,8 @@
 title: "手把手自建 Cloudflare 临时邮箱：零成本、无限账号、支持收发"
 date: "2026-06-02T22:30:00Z"
 description: "基于 Cloudflare Workers + D1 + KV + Email Routing 搭建个人临时邮箱系统，支持收发、TG 通知、IMAP/SMTP，小白也能看懂"
-cover: "/images/agnes/temp-email-cover.png"
-tags: ["Cloudflare", "临时邮箱", "自建教程", "技术向"]
+cover: /images/agnes/generated-covers-20260608/cloudflare-temp-email-guide-cover-gpt-image-2-v1.png
+tags: ["域名邮箱", "Cloudflare", "临时邮箱", "自建教程"]
 published: true
 ---
 

@@ -1,6 +1,7 @@
 ---
 title: "在 Windows 下使用 symlink 同步文件"
 date: "2026-05-18T10:00:00Z"
+cover: /images/agnes/generated-covers-20260608/windows-symlink-cover-gpt-image-2-v1.png
 description: "记录一下使用 mklink 创建目录软链接的技巧"
 tags: ["Windows", "Tips"]
 published: true

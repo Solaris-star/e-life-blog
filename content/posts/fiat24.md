@@ -1,8 +1,8 @@
 ---
-title: "Fiat24 注册教程，助你开通各类订阅"
+title: "Fiat24于6月5日中午12点对大陆用户关门，此教程失效 - Fiat24 注册教程，助你开通各类订阅"
 date: "2026-05-31T19:00:00Z"
 description: "大陆用户免费开通Fiat24瑞士IBAN账户，支持ChatGPT/YouTube等海外订阅，附全流程图文教程"
-cover: "/images/fiat24/cover.jpg"
+cover: /images/agnes/generated-covers-20260608/fiat24-cover-gpt-image-2-v1.png
 tags: ["海外支付", "Fiat24", "虚拟卡", "教程"]
 published: true
 ---

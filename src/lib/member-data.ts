@@ -28,6 +28,7 @@ export const planRank: Record<MemberPlan, number> = {
   free: 0,
   basic: 1,
   pro: 2,
+  lifetime: 3,
 };
 
 export const memberResources: MemberResource[] = [

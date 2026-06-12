@@ -15,6 +15,7 @@ import type {
   AIToolItem,
   ResearchItem,
   BusinessPolicyItem,
+  AIDealItem,
   ActionType,
 } from "../types";
 import { faviconUrl } from "@/lib/daily/brandIcon";
@@ -23,8 +24,8 @@ import { InsightCard } from "./InsightCard";
 import { TagList } from "./TagList";
 import { ActionPill } from "./ActionPill";
 
-type Variant = "tools" | "research" | "business";
-type SectionItem = AIToolItem | ResearchItem | BusinessPolicyItem;
+type Variant = "tools" | "research" | "business" | "deals";
+type SectionItem = AIToolItem | ResearchItem | BusinessPolicyItem | AIDealItem;
 
 interface TabDef {
   key: Variant;
@@ -39,6 +40,7 @@ export function TabbedSections({ sections }: { sections: DailyRadarSections }) {
     { key: "tools", label: "AI 工具", items: sections.ai_tools, max: 6, empty: "今日暂无工具更新。" },
     { key: "research", label: "研究动态", items: sections.research_directions, max: 6, empty: "今日暂无新研究方向。" },
     { key: "business", label: "OPC 产品", items: sections.business_policy, max: 6, empty: "今日暂无新的 AI 创客产品。" },
+    { key: "deals", label: "福利羊毛", items: sections.ai_deals, max: 6, empty: "今日暂无可靠福利信号。" },
   ];
 
   const [active, setActive] = useState<Variant>("tools");
@@ -240,6 +242,12 @@ function cardFields(
     case "business": {
       const bp = item as BusinessPolicyItem;
       return { iconName: bp.title, subtitle: zhMeta(bp.market_area) };
+    }
+    case "deals": {
+      const d = item as AIDealItem;
+      const conf = d.confidence === "high" ? "高可信" : d.confidence === "medium" ? "中信" : "低信";
+      const provider = d.provider ? `${d.provider} · ` : "";
+      return { iconName: d.provider || d.title, subtitle: `${provider}${conf}${d.valid_until ? ` · 至${d.valid_until}` : ""}` };
     }
     default:
       return { iconName: item.title, subtitle: "" };

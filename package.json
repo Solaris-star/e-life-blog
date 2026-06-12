@@ -9,9 +9,13 @@
     "deploy:blog": "docker compose -f /Users/solaris/AI/docker-compose.yml up -d --build --no-deps blog && npm run edgeone:purge",
     "edgeone:purge": "node scripts/purge-edgeone-cache.mjs",
     "start": "next start -p 5000",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate:member-json": "node scripts/migrate-member-json-to-db.mjs"
   },
   "dependencies": {
+    "@prisma/client": "^6.19.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.2.1",
     "github-slugger": "^2.0.0",
@@ -19,6 +23,7 @@
     "lucide-react": "^1.16.0",
     "next": "16.2.6",
     "next-mdx-remote": "^6.0.0",
+    "qrcode": "^1.5.4",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "rehype-slug": "^6.0.0",
@@ -27,12 +32,15 @@
     "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "20.19.41",
+    "@types/qrcode": "^1.5.6",
     "@types/react": "19.2.15",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
+    "prisma": "^6.19.0",
     "tailwindcss": "^4",
     "typescript": "5.9.3"
   }

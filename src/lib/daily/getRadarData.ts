@@ -7,7 +7,7 @@ const DAILYBRIEF_INTERNAL =
 export async function getRadarData(): Promise<DailyRadarDTO | null> {
   try {
     const radarRes = await fetch(`${DAILYBRIEF_INTERNAL}/api/radar`, {
-      next: { revalidate: 300 },
+      cache: "no-store",
       signal: AbortSignal.timeout(8_000),
     });
 
@@ -17,7 +17,7 @@ export async function getRadarData(): Promise<DailyRadarDTO | null> {
     }
 
     const legacyRes = await fetch(`${DAILYBRIEF_INTERNAL}/api/daily-brief`, {
-      next: { revalidate: 300 },
+      cache: "no-store",
       signal: AbortSignal.timeout(8_000),
     });
 

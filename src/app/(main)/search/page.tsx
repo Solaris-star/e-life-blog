@@ -1,41 +1,24 @@
-import { getIdeas, getPosts } from "@/lib/content";
-import { dailyBriefs, projects } from "@/lib/site-data";
-import { SearchClient, SearchItem } from "@/components/search/SearchClient";
+import { SearchClient, type SearchFilter } from "@/components/search/SearchClient";
 
-export default function SearchPage() {
-  const posts = getPosts();
-  const ideas = getIdeas();
+export const dynamic = "force-dynamic";
 
-  const items: SearchItem[] = [
-    ...posts.map((post) => ({
-      title: post.meta.title,
-      description: post.meta.description || post.content.slice(0, 120),
-      href: `/articles/${post.slug}`,
-      type: "文章" as const,
-      tags: post.meta.tags,
-    })),
-    ...ideas.map((idea) => ({
-      title: idea.meta.title,
-      description: idea.meta.description || idea.content.slice(0, 120),
-      href: "/ideas",
-      type: "想法" as const,
-      tags: idea.meta.tags,
-    })),
-    ...projects.map((project) => ({
-      title: project.name,
-      description: project.description,
-      href: "/projects",
-      type: "项目" as const,
-      tags: project.stack,
-    })),
-    ...dailyBriefs.map((brief) => ({
-      title: brief.title,
-      description: `${brief.summary} ${brief.comment}`,
-      href: "/daily",
-      type: "Daily" as const,
-      tags: [brief.category, brief.sourceName],
-    })),
-  ];
+const VALID_TYPES: readonly SearchFilter[] = ["全部", "文章", "想法", "项目", "Daily"];
+
+interface SearchPageProps {
+  searchParams: Promise<{ q?: string | string[]; type?: string | string[] }>;
+}
+
+function firstParam(value: string | string[] | undefined): string {
+  return typeof value === "string" ? value : "";
+}
+
+export default async function SearchPage({ searchParams }: SearchPageProps) {
+  const { q, type } = await searchParams;
+  const initialQuery = firstParam(q).slice(0, 100);
+  const rawType = firstParam(type);
+  const initialType: SearchFilter = (VALID_TYPES as readonly string[]).includes(rawType)
+    ? (rawType as SearchFilter)
+    : "全部";
 
   return (
     <div className="mx-auto max-w-4xl space-y-10 pb-8">
@@ -49,7 +32,7 @@ export default function SearchPage() {
         </p>
       </header>
 
-      <SearchClient items={items} />
+      <SearchClient initialQuery={initialQuery} initialType={initialType} />
     </div>
   );
 }

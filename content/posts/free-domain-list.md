@@ -2,7 +2,7 @@
 title: "免费域名盘点总结（2026版）"
 date: "2026-05-30T10:00:00Z"
 description: "2026年免费域名服务大盘点：DigitalPlat us.kg/xx.kg、ClouDNS、deSEC、Cloudflare Pages、ZoneABC 等免费域名服务商深度对比，注册流程、续期方式、Cloudflare 托管兼容性全解析。"
-cover: "/images/agnes/coding-plan-cover.png"
+cover: /images/agnes/generated-covers-20260608/free-domain-list-cover-gpt-image-2-v1.png
 tags: ["免费域名", "域名注册", "Cloudflare", "福利羊毛"]
 published: true
 ---

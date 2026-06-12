@@ -11,12 +11,14 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY tsconfig.json next.config.ts postcss.config.mjs eslint.config.mjs ./
+COPY prisma/ ./prisma/
 COPY src/ ./src/
 COPY public/ ./public/
 COPY content/ ./content/
 COPY scripts/ ./scripts/
 
 # Next.js 16 生产构建默认用 webpack，无 turbopack 兼容问题
+RUN npx prisma generate
 RUN npm run build
 
 # ===== Stage 2: Runtime =====

@@ -1,6 +1,7 @@
 ---
 title: "Bybit Card 虚拟卡开卡教程：申请、审核与充值注意事项"
 date: "2026-05-31T18:30:00Z"
+cover: /images/agnes/generated-covers-20260608/bybit-card-cover-gpt-image-2-v1.png
 description: "整理 Bybit Card 虚拟卡的申请流程、KYC 要求、审核注意事项、卡片查看和充值使用方式。"
 tags: ["虚拟卡", "Bybit", "海外支付", "福利羊毛"]
 published: true

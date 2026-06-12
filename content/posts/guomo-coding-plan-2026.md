@@ -1,6 +1,7 @@
 ---
 title: "国模 Coding Plan 对比 (2026年6月) — 谁值得买谁在坑你"
 date: "2026-06-01T22:30:00Z"
+cover: /images/agnes/generated-covers-20260608/guomo-coding-plan-2026-cover-gpt-image-2-v1.png
 description: "2026年5月国模 Coding Plan 市场大洗牌：阿里停服、腾讯下架、智谱涨价、MiniMax 改 Token Plan 涨价4倍。OpenCode Go $5/月全旗舰国模，DeepSeek V4 Flash 按量 ¥1/百万Token。看完这篇不花冤枉钱。"
 tags: ["AI研究", "Coding Plan", "省钱", "OpenCode Go", "福利羊毛"]
 published: true

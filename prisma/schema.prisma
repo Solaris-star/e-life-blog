@@ -1,0 +1,245 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum MemberPlan {
+  free
+  basic
+  pro
+  lifetime
+}
+
+enum SubscriptionStatus {
+  active
+  inactive
+  past_due
+  expired
+}
+
+enum MemberRole {
+  member
+  admin
+}
+
+enum MemberAccountStatus {
+  active
+  disabled
+}
+
+enum MemberEventStatus {
+  success
+  blocked
+  failed
+}
+
+enum HumanChallengePurpose {
+  register
+  login
+}
+
+enum MemberPostActivityType {
+  bookmark
+  read_later
+  history
+}
+
+enum RedeemCodeStatus {
+  active
+  used
+  expired
+}
+
+enum MemberAccountTokenType {
+  email_verify
+  password_reset
+  email_change
+}
+
+model MemberUser {
+  id                       String              @id
+  name                     String
+  email                    String              @unique
+  normalizedEmail          String              @unique
+  emailVerified            Boolean             @default(false)
+  emailVerifiedAt          DateTime?
+  passwordHash             String?
+  plan                     MemberPlan          @default(free)
+  role                     MemberRole          @default(member)
+  accountStatus            MemberAccountStatus @default(active)
+  subscriptionStatus       SubscriptionStatus  @default(inactive)
+  subscriptionRenewsAt     DateTime?
+  lastLoginAt              DateTime?
+  twoFactorEnabled         Boolean             @default(false)
+  twoFactorSecret          String?
+  twoFactorEnabledAt       DateTime?
+  twoFactorSetupExpiresAt  DateTime?
+  createdAt                DateTime            @default(now())
+  updatedAt                DateTime            @updatedAt
+
+  sessions                 MemberSession[]
+  postActivities           MemberPostActivity[]
+  accountTokens            MemberAccountToken[]
+  usedRedeemCodes          MemberRedeemCode[]  @relation("RedeemCodeUsedBy")
+  registrationEvents       MemberRegistrationEvent[]
+  loginEvents              MemberLoginEvent[]
+
+  @@index([createdAt])
+  @@index([plan, subscriptionStatus])
+}
+
+model MemberSession {
+  id        String     @id
+  userId    String
+  createdAt DateTime   @default(now())
+  expiresAt DateTime
+
+  user      MemberUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model MemberAccessLog {
+  id        String   @id
+  action    String
+  userId    String
+  targetId  String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([userId])
+  @@index([action])
+}
+
+model MemberAdminAuditLog {
+  id           String   @id
+  actorEmail   String
+  action       String
+  targetUserId String
+  before       Json?
+  after        Json?
+  createdAt    DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([targetUserId])
+}
+
+model MemberRegistrationEvent {
+  id          String            @id
+  emailHash   String
+  domain      String
+  ip          String
+  userAgent   String
+  fingerprint String
+  status      MemberEventStatus
+  reason      String?
+  userId      String?
+  createdAt   DateTime          @default(now())
+
+  user        MemberUser?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([emailHash])
+  @@index([ip])
+  @@index([fingerprint])
+}
+
+model MemberLoginEvent {
+  id          String            @id
+  emailHash   String
+  ip          String
+  userAgent   String
+  fingerprint String
+  status      MemberEventStatus
+  reason      String?
+  userId      String?
+  createdAt   DateTime          @default(now())
+
+  user        MemberUser?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([emailHash])
+  @@index([ip])
+  @@index([fingerprint])
+}
+
+model MemberHumanChallenge {
+  id          String                @id
+  answerHash  String
+  ip          String
+  fingerprint String
+  purpose     HumanChallengePurpose
+  createdAt   DateTime              @default(now())
+  expiresAt   DateTime
+  usedAt      DateTime?
+
+  @@index([expiresAt])
+  @@index([ip, fingerprint, purpose])
+}
+
+model MemberPostActivity {
+  id         String                 @id
+  userId     String
+  slug       String
+  type       MemberPostActivityType
+  createdAt  DateTime               @default(now())
+  updatedAt  DateTime               @updatedAt
+  lastReadAt DateTime?
+  readCount  Int?
+
+  user       MemberUser             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, slug, type])
+  @@index([slug])
+  @@index([updatedAt])
+}
+
+model MemberRedeemCode {
+  code                String           @id
+  plan                MemberPlan
+  status              RedeemCodeStatus @default(active)
+  createdBy           String
+  createdAt           DateTime         @default(now())
+  expiresAt           DateTime?
+  membershipExpiresAt DateTime?
+  usedBy              String?
+  usedAt              DateTime?
+
+  usedByUser MemberUser?     @relation("RedeemCodeUsedBy", fields: [usedBy], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([usedBy])
+}
+
+model MemberAccountToken {
+  id        String                 @id
+  userId    String?
+  email     String?
+  tokenHash String                 @unique
+  type      MemberAccountTokenType
+  payload   Json?
+  createdAt DateTime               @default(now())
+  expiresAt DateTime
+  usedAt    DateTime?
+
+  user      MemberUser?            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, type])
+  @@index([email, type])
+  @@index([expiresAt])
+}
+
+model MemberEmailRateLimit {
+  id        String   @id
+  email     String
+  purpose   String
+  sentAt    DateTime
+  createdAt DateTime @default(now())
+
+  @@index([email, purpose, sentAt])
+}

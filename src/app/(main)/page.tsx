@@ -19,7 +19,6 @@ import { getIdeas, getPostListDescription, getPosts, type Post } from "@/lib/con
 import { getCurrentUser, type MemberUser } from "@/lib/member-auth";
 import { canReadPost } from "@/lib/post-access";
 import HeroGardenImage from "@/components/HeroGardenImage";
-import { FluidInk } from "@/components/FluidInk";
 import { Reveal } from "@/components/layout/Reveal";
 import { getRadarData } from "@/lib/daily/getRadarData";
 import type { TopStoryItem } from "./daily/types";
@@ -106,38 +105,8 @@ export default async function Home() {
 
 function HeroSection() {
   return (
-    <section className="relative grid min-h-[25rem] items-center overflow-hidden border-b-[3px] border-[color:var(--line)] lg:grid-cols-[42fr_58fr]">
-      {/* 未来感流体墨水背景:移动端也可见,弥补原静态插画 <768px 隐藏的缺口 */}
-      <div aria-hidden className="absolute inset-0 z-0">
-        <FluidInk className="h-full w-full" />
-      </div>
-      <div
-        aria-hidden
-        className="absolute inset-0 z-0 bg-[linear-gradient(105deg,var(--paper)_0%,var(--paper)_26%,transparent_70%)]"
-      />
-      <div className="hero-stagger relative z-10 min-w-0 space-y-4 p-5 md:p-8 lg:py-9 lg:pr-2">
-        <div className="section-kicker">{"// DIGITAL GARDEN"}</div>
-        <div className="space-y-4">
-          <h1 className="press-title max-w-full text-[clamp(2.55rem,6.6vw,5rem)] text-[color:var(--foreground)]">
-            <span className="block">记录技术、</span>
-            <span className="block whitespace-nowrap">生活与思考。</span>
-          </h1>
-          <p className="max-w-[33rem] text-base font-bold leading-7 text-[color:var(--foreground)] md:text-lg">
-            这里是一间打开窗的书房，文章、短想法和日常记录从 Obsidian 笔记里长出来，保留一点复古纸张的温暖感。
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-3">
-          <Link href="/writing" className="mcm-button mcm-button-primary">
-            阅读文章
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-          <Link href="/ideas" className="mcm-button mcm-button-secondary">
-            查看想法
-          </Link>
-        </div>
-      </div>
-
-      <div className="relative z-10 flex min-w-0 items-center justify-end overflow-visible px-2 pb-3 pt-0 md:px-4 md:pb-4 md:pt-1 lg:pb-2 lg:pl-0 lg:pr-0">
+    <section className="relative grid min-h-[25rem] items-center justify-items-center overflow-hidden border-b-[3px] border-[color:var(--line)]">
+      <div className="relative z-10 flex min-w-0 items-center justify-center overflow-visible p-5 md:p-8 lg:py-9">
         <HeroGardenImage />
       </div>
     </section>

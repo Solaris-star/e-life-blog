@@ -107,7 +107,7 @@ function HeroSection() {
   return (
     <section className="relative grid min-h-[25rem] items-center justify-items-center overflow-hidden border-b-[3px] border-[color:var(--line)]">
       <div className="relative z-10 flex min-w-0 items-center justify-center overflow-visible p-5 md:p-8 lg:py-9">
-        <HeroGardenImage />
+        {/* GardenStage (global) renders the pixel characters here */}
       </div>
     </section>
   );

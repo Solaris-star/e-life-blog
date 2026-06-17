@@ -1,0 +1,201 @@
+/* GardenStage — 全站像素角色舞台样式 */
+
+.stageWrap {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: min(380px, 32vw);
+  height: min(238px, 20vw);
+  z-index: 50;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  border-radius: 12px 0 0 0;
+  box-shadow: -4px -4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* === Layered scene background === */
+.sceneBg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.sceneBg img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.layerFar {
+  z-index: 1;
+  filter: brightness(0.9) saturate(0.8);
+}
+
+.layerMid {
+  z-index: 2;
+}
+
+.layerNear {
+  z-index: 3;
+  transform: scale(1.05);
+  transform-origin: bottom center;
+}
+
+/* Dynamic atmosphere layer */
+.atmosphere {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+
+/* Scene-specific atmosphere animations */
+.scene1Atm {
+  /* Homepage: falling petals */
+  background-image:
+    radial-gradient(circle at 20% 0%, rgba(255, 192, 203, 0.3) 1px, transparent 2px),
+    radial-gradient(circle at 60% 10%, rgba(255, 192, 203, 0.2) 1px, transparent 2px),
+    radial-gradient(circle at 80% 5%, rgba(255, 192, 203, 0.25) 1px, transparent 2px);
+  animation: petalFall 12s linear infinite;
+}
+
+.scene2Atm {
+  /* Articles: dust motes in light beams */
+  animation: dustFloat 8s ease-in-out infinite;
+}
+
+.scene3Atm {
+  /* Daily: cherry petals + water shimmer */
+  background-image:
+    radial-gradient(circle at 30% 20%, rgba(255, 183, 197, 0.25) 1.5px, transparent 2px),
+    radial-gradient(circle at 70% 30%, rgba(255, 183, 197, 0.2) 1.5px, transparent 2px);
+  animation: petalFall 10s linear infinite;
+}
+
+.scene4Atm {
+  /* Resources: dust in light beams */
+  animation: dustFloat 6s ease-in-out infinite;
+}
+
+.scene5Atm {
+  /* Writing: drifting clouds */
+  background: linear-gradient(180deg, transparent 60%, rgba(255, 255, 255, 0.1) 100%);
+  animation: cloudDrift 20s linear infinite;
+}
+
+.atmosphere[data-reduced="true"] {
+  animation: none !important;
+}
+
+@keyframes petalFall {
+  0% { transform: translateY(-10%); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(110%); opacity: 0; }
+}
+
+@keyframes dustFloat {
+  0%, 100% { opacity: 0.3; transform: translateY(0); }
+  50% { opacity: 0.6; transform: translateY(-5px); }
+}
+
+@keyframes cloudDrift {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-10%); }
+}
+
+/* === Character canvas === */
+.canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+  cursor: pointer;
+  filter: drop-shadow(2px 3px 2px rgba(36, 31, 24, 0.2));
+}
+
+/* === Thought bubble === */
+.thought {
+  position: absolute;
+  top: 8%;
+  right: 5%;
+  max-width: 50%;
+  padding: 7px 11px;
+  background: #fff;
+  color: #241f18;
+  border: 2px solid #241f18;
+  border-radius: 16px 16px 16px 4px;
+  box-shadow: 3px 3px 0 rgba(36, 31, 24, 0.85);
+  font-weight: 700;
+  font-size: clamp(10px, 0.85vw, 13px);
+  line-height: 1.45;
+  z-index: 10;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(6px) scale(0.96);
+  transform-origin: bottom right;
+  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+
+.thoughtOn {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.thoughtText {
+  color: #241f18;
+}
+
+.dots {
+  position: absolute;
+  left: 12%;
+  top: 100%;
+}
+
+.dots i {
+  display: block;
+  background: #fff;
+  border: 2px solid #241f18;
+  border-radius: 50%;
+}
+
+.dots i:nth-child(1) { width: 8px; height: 8px; margin: 4px 0 0 7px; }
+.dots i:nth-child(2) { width: 5px; height: 5px; margin: 3px 0 0 2px; }
+.dots i:nth-child(3) { width: 4px; height: 4px; margin: 3px 0 0 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .thought { transition: none; }
+  .atmosphere { animation: none !important; }
+}
+
+/* === Mobile static frame === */
+.mobileFrame {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.mobileBg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mobileChar {
+  position: relative;
+  height: 30%;
+  width: auto;
+  z-index: 2;
+  filter: drop-shadow(2px 3px 2px rgba(36, 31, 24, 0.2));
+}

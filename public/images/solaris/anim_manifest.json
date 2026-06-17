@@ -1,9 +1,72 @@
 {
   "human_idle": {
     "file": "anim_human_idle.png",
-    "frames": 8,
+    "frames": 6,
     "fps": 8,
     "loop": true,
+    "cell": 120
+  },
+  "human_walk": {
+    "file": "anim_human_walk.png",
+    "frames": 8,
+    "fps": 10,
+    "loop": true,
+    "cell": 120
+  },
+  "human_sit": {
+    "file": "anim_human_sit.png",
+    "frames": 1,
+    "fps": 1,
+    "loop": false,
+    "cell": 120
+  },
+  "human_lean": {
+    "file": "anim_human_lean.png",
+    "frames": 1,
+    "fps": 1,
+    "loop": false,
+    "cell": 120
+  },
+  "human_squat": {
+    "file": "anim_human_squat.png",
+    "frames": 1,
+    "fps": 1,
+    "loop": false,
+    "cell": 120
+  },
+  "human_climb": {
+    "file": "anim_human_climb.png",
+    "frames": 1,
+    "fps": 1,
+    "loop": false,
+    "cell": 120
+  },
+  "human_point": {
+    "file": "anim_human_point.png",
+    "frames": 2,
+    "fps": 4,
+    "loop": false,
+    "cell": 120
+  },
+  "human_bow": {
+    "file": "anim_human_bow.png",
+    "frames": 3,
+    "fps": 4,
+    "loop": false,
+    "cell": 120
+  },
+  "morph_to_octo": {
+    "file": "anim_morph_to_octo.png",
+    "frames": 16,
+    "fps": 12,
+    "loop": false,
+    "cell": 120
+  },
+  "morph_to_human": {
+    "file": "anim_morph_to_human.png",
+    "frames": 16,
+    "fps": 12,
+    "loop": false,
     "cell": 120
   },
   "octo_idle": {
@@ -13,32 +76,81 @@
     "loop": true,
     "cell": 120
   },
-  "morph_to_octo": {
-    "file": "anim_morph_to_octo.png",
-    "frames": 25,
-    "fps": 12,
-    "loop": false,
-    "cell": 120
+  "catA_loaf": {
+    "file": "anim_catA_loaf.png",
+    "frames": 4,
+    "fps": 4,
+    "loop": true,
+    "cell": 100
   },
-  "morph_to_human": {
-    "file": "anim_morph_to_human.png",
-    "frames": 25,
-    "fps": 12,
-    "loop": false,
-    "cell": 120
-  },
-  "octo_curious": {
-    "file": "anim_octo_curious.png",
+  "catA_sit_high": {
+    "file": "anim_catA_sit_high.png",
     "frames": 1,
     "fps": 1,
     "loop": false,
-    "cell": 120
+    "cell": 100
   },
-  "octo_curl": {
-    "file": "anim_octo_curl.png",
+  "catA_slap": {
+    "file": "anim_catA_slap.png",
+    "frames": 2,
+    "fps": 6,
+    "loop": false,
+    "cell": 100
+  },
+  "catA_jump_down": {
+    "file": "anim_catA_jump_down.png",
+    "frames": 3,
+    "fps": 8,
+    "loop": false,
+    "cell": 100
+  },
+  "catB_idle": {
+    "file": "anim_catB_idle.png",
+    "frames": 4,
+    "fps": 4,
+    "loop": true,
+    "cell": 110
+  },
+  "catB_run": {
+    "file": "anim_catB_run.png",
+    "frames": 6,
+    "fps": 10,
+    "loop": true,
+    "cell": 110
+  },
+  "catB_dive": {
+    "file": "anim_catB_dive.png",
+    "frames": 2,
+    "fps": 4,
+    "loop": false,
+    "cell": 110
+  },
+  "catB_play": {
+    "file": "anim_catB_play.png",
+    "frames": 4,
+    "fps": 6,
+    "loop": true,
+    "cell": 110
+  },
+  "catB_jump": {
+    "file": "anim_catB_jump.png",
+    "frames": 3,
+    "fps": 8,
+    "loop": false,
+    "cell": 110
+  },
+  "catB_wet": {
+    "file": "anim_catB_wet.png",
     "frames": 1,
     "fps": 1,
     "loop": false,
-    "cell": 120
+    "cell": 110
+  },
+  "catB_puff": {
+    "file": "anim_catB_puff.png",
+    "frames": 1,
+    "fps": 1,
+    "loop": false,
+    "cell": 110
   }
 }

@@ -4,6 +4,8 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { GardenNarrativeProvider } from "@/components/garden/GardenNarrativeContext";
+import ClientGardenStage from "@/components/garden/ClientGardenStage";
 
 export const metadata: Metadata = {
   title: "E-Life",
@@ -49,11 +51,15 @@ export default function RootLayout({
         className="site-shell min-h-screen flex flex-col antialiased"
       >
         <ThemeProvider defaultTheme="system">
-          <Header />
-          <main className="shell-container flex-grow py-7 md:py-8">
-            {children}
-          </main>
-          <Footer />
+          <GardenNarrativeProvider>
+            <Header />
+            <main className="shell-container flex-grow py-7 md:py-8">
+              {children}
+            </main>
+            {/* Global garden character stage — renders Solaris + cats on all pages */}
+            <ClientGardenStage />
+            <Footer />
+          </GardenNarrativeProvider>
         </ThemeProvider>
       </body>
     </html>

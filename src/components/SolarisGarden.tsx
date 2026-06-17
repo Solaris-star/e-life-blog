@@ -14,10 +14,10 @@
 import { useEffect, useRef, useState } from 'react';
 import styles from './SolarisGarden.module.css';
 
-// ── 调参 ───────────────────────────────────────────────────────────────────
+// ── 调参(歧路旅人 HD-2D 比例) ─────────────────────────────────────────────
 const MANIFEST_URL = '/images/solaris/anim_manifest.json';
 const ASSET_BASE = '/images/solaris/';
-const DPR_CAP = 2;
+const DPR_CAP = 1.5; // 像素风不需要 2x 超采样,1.5 足够且省内存
 const CYCLE_DOZE_MS = 20000; // §4 久不动 → 打盹
 const THOUGHT_HOLD_MS = 2600; // §2 思考停留后散开
 const TYPE_MS = 46; // 逐字「盖章」间隔

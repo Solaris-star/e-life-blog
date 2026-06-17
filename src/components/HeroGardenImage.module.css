@@ -1,9 +1,11 @@
-/* Hero 右栏:SolarisGarden 像素角色舞台(无背景插画,动画自身即为视觉主体) */
+/* Hero 右栏:SolarisGarden 像素角色舞台(歧路旅人 HD-2D 比例)
+   角色约占场景高度 1/4,场景环境为视觉主体。
+   这里先做首屏场景容器,后续 Phase 2 接入全局角色层后会移到各页面场景里。 */
 .wrap {
   position: relative;
   width: 100%;
-  max-width: 520px;
-  aspect-ratio: 1 / 1;
+  max-width: 360px;
+  aspect-ratio: 16 / 11;
   margin-left: auto;
   pointer-events: none;
   user-select: none;
@@ -12,10 +14,11 @@
 
 @media (max-width: 1024px) {
   .wrap {
-    max-width: 420px;
+    max-width: 300px;
   }
 }
 
+/* 移动端:静态定帧(不隐藏,Phase 1 先保留 display:none,Phase 3 做静态定帧) */
 @media (max-width: 768px) {
   .wrap {
     display: none;

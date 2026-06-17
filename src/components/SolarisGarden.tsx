@@ -114,10 +114,13 @@ export default function SolarisGarden() {
   // ── 引擎主体:加载 → 渲染循环 / 定帧 ──
   useEffect(() => {
     if (!isLight) return; // dark 不挂载 canvas
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    const canvasEl = canvasRef.current;
+    if (!canvasEl) return;
+    const ctx2d = canvasEl.getContext('2d');
+    if (!ctx2d) return;
+    // narrow 后赋值给非 null const,闭包内可直接使用(TS 跨闭包不传递 narrowing)
+    const canvas: HTMLCanvasElement = canvasEl;
+    const ctx: CanvasRenderingContext2D = ctx2d;
 
     let alive = true;
     let raf = 0;
@@ -227,6 +230,7 @@ export default function SolarisGarden() {
     }
 
     function drawCell(animKey: string, frame: number, dx: number) {
+      if (!ctx) return;
       const a = anims[animKey];
       if (!a) return;
       const f = Math.max(0, Math.min(a.n - 1, frame));

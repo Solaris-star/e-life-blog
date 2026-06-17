@@ -1,11 +1,8 @@
-/* Solaris 像素角色舞台:叠在数字花园面板右侧,人形站在面板下方中右。 */
+/* Solaris 像素角色舞台:撑满 Hero 右栏容器,动画自身即为视觉主体。 */
 .stage {
-  position: absolute;
-  right: 9%;
-  bottom: 6%;
-  width: 46%;
-  max-width: 320px;
-  aspect-ratio: 1 / 1;
+  position: relative;
+  width: 100%;
+  height: 100%;
   pointer-events: none; /* 不挡 hero;canvas 自身再开启 */
   z-index: 2;
 }

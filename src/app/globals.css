@@ -268,7 +268,7 @@ button {
 .site-shell {
   position: relative;
   isolation: isolate;
-  overflow-x: hidden;
+  overflow-x: clip;
   background:
     repeating-linear-gradient(
       90deg,
@@ -2236,7 +2236,7 @@ a.section-card-title:hover {
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
   }
 }
 
@@ -2269,7 +2269,7 @@ a.section-card-title:hover {
 
   /* 路由切换入场(app/template.tsx) */
   .page-enter {
-    animation: page-enter 420ms var(--ease-out-soft) both;
+    animation: page-enter 420ms var(--ease-out-soft) backwards;
   }
 
   /* 首页 hero 首屏级联入场 */

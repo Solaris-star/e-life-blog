@@ -44,10 +44,6 @@ export default function RootLayout({
           data-host-url="/umami"
           strategy="afterInteractive"
         />
-        <Script
-          src="/js/code-block-copy.js"
-          strategy="afterInteractive"
-        />
       </head>
       <body
         className="site-shell min-h-screen flex flex-col antialiased"

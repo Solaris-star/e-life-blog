@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh"><head><meta charset="UTF-8"><title>Solaris 首页小剧 Demo</title>
+<style>
+  body{background:#f3e5cf;margin:0;font-family:sans-serif;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px}
+  h1{color:#241f18;font-size:16px;margin:4px}
+  #wrap{position:relative;width:360px;height:360px}
+  canvas{image-rendering:pixelated;width:360px;height:360px}
+  #thought{position:absolute;left:8px;top:18px;max-width:200px;color:#241f18;font-size:15px;
+    font-weight:700;line-height:1.4;background:rgba(243,229,207,.7);padding:4px 8px;border:2px solid #241f18;
+    border-radius:2px;box-shadow:4px 4px 0 #241f18;opacity:0;transition:opacity .4s;pointer-events:none}
+  #cap{color:#a84d27;font-size:13px;font-weight:700}
+  .hint{color:#5e5548;font-size:12px}
+</style></head>
+<body>
+<h1>Solaris · 首页小剧(点击她触发变身)</h1>
+<div id="wrap">
+  <canvas id="c" width="168" height="168"></canvas>
+  <div id="thought"></div>
+</div>
+<div id="cap">loading…</div>
+<div class="hint">人形站立呼吸 → 30s/点击 变身 → 章鱼漂浮 → 变回 ↻</div>
+<script>
+const A={human_idle:{img:'anim_human_idle.png',n:8,fps:8},
+         octo_idle:{img:'anim_octo_idle.png',n:6,fps:6},
+         morph:{img:'anim_morph.png',n:8,fps:12}};
+const cv=document.getElementById('c'),x=cv.getContext('2d');x.imageSmoothingEnabled=false;
+const cap=document.getElementById('cap'),th=document.getElementById('thought');
+const CELL=168; let ready=0;
+for(const k in A){const im=new Image();im.onload=()=>{ready++;A[k].im=im;if(ready==3)start()};im.src=A[k].img;A[k].e=im;}
+
+let state='human_idle',frame=0,dir=1,lastT=0,stateStart=0,morphTo='octo_idle',busy=false;
+function draw(anim,f){x.clearRect(0,0,CELL,CELL);x.drawImage(anim.im,f*CELL,0,CELL,CELL,0,0,CELL,CELL);}
+function showThought(t){th.textContent=t;th.style.opacity=1;clearTimeout(th._t);th._t=setTimeout(()=>th.style.opacity=0,2600);}
+
+const THOUGHTS={notice:'……又有人闯进来了。',watch:'别紧张,我只是……看着。',settle:'慢慢看吧。反正我,等了很久了。'};
+
+function enter(s){state=s;frame=(s=='morph'&&dir<0)?A.morph.n-1:0;stateStart=performance.now();
+  cap.textContent=s;
+  if(s=='human_idle'){busy=false;setTimeout(()=>{if(state=='human_idle')showThought(THOUGHTS.settle)},1200);}
+  if(s=='octo_idle'){busy=false;setTimeout(()=>{if(state=='octo_idle')showThought(THOUGHTS.watch)},800);}
+}
+function loop(t){
+  const a=A[state],iv=1000/a.fps;
+  if(t-lastT>iv){lastT=t;
+    if(state=='morph'){
+      frame+=dir;
+      if(frame<0||frame>=a.n){enter(morphTo);}
+    }else{
+      frame=(frame+1)%a.n;
+      const dur=t-stateStart;
+      if(dur>9000&&!busy){busy=true;triggerMorph();}   // 自动轮播(demo 缩短到 9s)
+    }
+    if(state!=='morph')draw(a,frame); else draw(a,Math.max(0,Math.min(a.n-1,frame)));
+  }
+  requestAnimationFrame(loop);
+}
+function triggerMorph(){
+  if(state=='morph')return;
+  if(state=='human_idle'){dir=1;morphTo='octo_idle';showThought('这副样子……比较好藏。');}
+  else{dir=-1;morphTo='human_idle';}
+  busy=true;enter('morph');
+}
+cv.parentElement.onclick=()=>{ if(state!=='morph') triggerMorph(); };
+function start(){cap.textContent='human_idle';enter('human_idle');showThought(THOUGHTS.notice);requestAnimationFrame(loop);}
+// 调试钩子:强制渲染指定动画帧(供截图)
+window.__show=(anim,f)=>{state='_frozen';draw(A[anim],f);cap.textContent=anim+' #'+f;};
+</script></body></html>

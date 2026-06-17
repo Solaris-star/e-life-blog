@@ -98,21 +98,12 @@ export default function TocSidebar({ headings }: TocSidebarProps) {
 
   return (
     <>
-      {/* ========== Desktop TOC: fixed sidebar on the left ========== */}
+      {/* ========== Desktop TOC: sticky sidebar in article layout ========== */}
       <aside
         aria-label="文章目录"
-        className="hidden xl:block"
-        style={{
-          position: "fixed",
-          top: "110px",
-          left: "max(1rem, calc((100vw - 90rem) / 2 + 1rem))",
-          width: "14rem",
-          maxHeight: "calc(100vh - 120px)",
-          overflowY: "auto",
-          zIndex: 30,
-        }}
+        className="scrollbar-hide hidden w-56 shrink-0 self-start overflow-y-auto xl:block xl:sticky xl:top-[110px] xl:max-h-[calc(100vh-120px)]"
       >
-        <nav className="scrollbar-hide">
+        <nav>
           <p className="mono-label mb-3 flex items-center gap-2 border-b-2 border-[color:var(--line)] pb-2 text-xs font-extrabold uppercase text-[color:var(--walnut)]">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <line x1="4" y1="6" x2="20" y2="6" /><line x1="4" y1="12" x2="14" y2="12" /><line x1="4" y1="18" x2="8" y2="18" />

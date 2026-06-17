@@ -1,5 +1,6 @@
 import Image from "next/image";
 import styles from "./HeroGardenImage.module.css";
+import SolarisGarden from "./SolarisGarden";
 
 export default function HeroGardenImage() {
   return (
@@ -12,6 +13,7 @@ export default function HeroGardenImage() {
         priority
         className={styles.image}
       />
+      <SolarisGarden />
     </div>
   );
 }

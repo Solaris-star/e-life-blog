@@ -1,0 +1,103 @@
+/* Solaris 像素角色舞台:叠在数字花园面板右侧,人形站在面板下方中右。 */
+.stage {
+  position: absolute;
+  right: 9%;
+  bottom: 6%;
+  width: 46%;
+  max-width: 320px;
+  aspect-ratio: 1 / 1;
+  pointer-events: none; /* 不挡 hero;canvas 自身再开启 */
+  z-index: 2;
+}
+
+.canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto; /* 接收点击变身 */
+  cursor: pointer;
+  /* 这些 sheet 是 LANCZOS 降采样的插画,平滑放大优于硬像素 */
+  image-rendering: auto;
+  filter: drop-shadow(2px 4px 3px rgba(36, 31, 24, 0.22));
+}
+
+/* §2/§3 思考飘字:右上白色云朵框 + 逐字盖章 */
+.thought {
+  position: absolute;
+  top: 2%;
+  right: -3%;
+  max-width: 64%;
+  padding: 7px 11px;
+  background: #fff;
+  color: #241f18;
+  border: 2px solid #241f18;
+  border-radius: 16px 16px 16px 4px;
+  box-shadow: 4px 4px 0 rgba(36, 31, 24, 0.85);
+  font-weight: 700;
+  font-size: clamp(11px, 0.95vw, 14px);
+  line-height: 1.45;
+  letter-spacing: 0.01em;
+  opacity: 0;
+  transform: translateY(6px) scale(0.96);
+  transform-origin: bottom right;
+  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+  pointer-events: none;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.thoughtOn {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.thoughtText {
+  color: #241f18;
+}
+
+/* 关键词锈红(§2)— 「」内首句的语气，靠整体墨色，足够清晰即可 */
+.thought :global(em),
+.thought b {
+  color: #d96d3a;
+  font-style: normal;
+}
+
+/* 思考引线点 ◦ ∘ ° :从云朵左下角朝角色头部递减 */
+.dots {
+  position: absolute;
+  left: 12%;
+  top: 100%;
+}
+
+.dots i {
+  display: block;
+  background: #fff;
+  border: 2px solid #241f18;
+  border-radius: 50%;
+}
+
+.dots i:nth-child(1) {
+  width: 9px;
+  height: 9px;
+  margin: 4px 0 0 7px;
+}
+
+.dots i:nth-child(2) {
+  width: 6px;
+  height: 6px;
+  margin: 3px 0 0 2px;
+}
+
+.dots i:nth-child(3) {
+  width: 4px;
+  height: 4px;
+  margin: 3px 0 0 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .thought {
+    transition: none;
+  }
+}
+
+/* 窄屏:花园面板本身在 <768 隐藏(见 HeroGardenImage.module.css），舞台随之消失 */

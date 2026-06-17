@@ -13,6 +13,7 @@ import TocSidebar from "@/components/layout/TocSidebar";
 import Lightbox from "@/components/layout/Lightbox";
 import { Reveal } from "@/components/layout/Reveal";
 import ReadingProgress from "@/components/article/ReadingProgress";
+import { CopyCodeButton } from "@/components/article/CopyCodeButton";
 import { getCurrentUser } from "@/lib/member-auth";
 import { canReadPost, getPostAccessLabel } from "@/lib/post-access";
 import { getMemberPostActivityState, recordPostRead } from "@/lib/member-post-activity";
@@ -137,6 +138,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
     code: (props: ComponentPropsWithoutRef<"code">) => <code className="relative rounded-[2px] border border-[color:var(--line)] bg-[color:rgb(212_165_116_/_28%)] px-[0.35rem] py-[0.2rem] font-mono text-sm text-[color:var(--foreground)]" {...props} />,
     pre: (props: ComponentPropsWithoutRef<"pre">) => (
       <div className="code-block-wrapper">
+        <CopyCodeButton />
         <pre className="pre-dark" {...props} />
       </div>
     ),
@@ -146,10 +148,10 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
   return (
     <>
-      <TocSidebar headings={tocHeadings} />
       {canRead && <ReadingProgress targetId="post-body" />}
-      <div className="mx-auto w-full px-3 pb-8 sm:px-4 xl:max-w-[90rem] xl:pl-[16rem]">
-        <article className="mx-auto max-w-4xl">
+      <div className="mx-auto flex w-full max-w-[90rem] items-start gap-8 px-3 pb-8 sm:px-4 xl:px-6">
+        <TocSidebar headings={tocHeadings} />
+        <article className="mx-auto min-w-0 max-w-4xl flex-1">
           <Breadcrumbs
             items={[
               { label: "首页", href: "/" },

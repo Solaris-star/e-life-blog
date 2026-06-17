@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh"><head><meta charset="UTF-8"><title>Solaris · 首页小剧 v2</title>
+<style>
+  *{box-sizing:border-box}
+  body{background:#f3e5cf;margin:0;font-family:"SF Pro Text",-apple-system,sans-serif;
+       display:flex;flex-direction:column;align-items:center;gap:8px;padding:18px;color:#241f18}
+  h1{font-size:15px;margin:2px 0;font-weight:800}
+  .hint{color:#5e5548;font-size:12px;max-width:560px;text-align:center;line-height:1.5}
+  #stage{position:relative;width:520px;height:380px;
+        background:radial-gradient(ellipse at 50% 78%, rgba(217,109,58,.08), transparent 60%);
+        border:2px solid #d6c8a8;border-radius:4px;overflow:hidden}
+  /* 地面线(虚的) */
+  #stage::after{content:"";position:absolute;left:0;right:0;top:312px;height:1px;
+        background:linear-gradient(90deg,transparent,#c8b88a 20%,#c8b88a 80%,transparent);opacity:.6}
+  canvas{image-rendering:pixelated;position:absolute;left:50%;top:50%;
+         width:336px;height:336px;transform:translate(-50%,-50%)}
+  /* 白色云朵思考泡(真云朵PNG作背景)— 右上角 */
+  #thought{position:absolute;right:8px;top:8px;width:220px;height:85px;
+        background:url('cloud_bubble.png') no-repeat center/contain;
+        opacity:0;transform:translateY(-4px) scale(.92);
+        transition:opacity .35s, transform .35s;pointer-events:none}
+  #thought.show{opacity:1;transform:translateY(0) scale(1)}
+  #thought span{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);
+        width:170px;text-align:center;color:#241f18;font-weight:700;font-size:13px;line-height:1.35}
+  /* 云朵小尾巴(指向角色) */
+  .tdot{position:absolute;background:#fff;border:2.5px solid #241f18;border-radius:50%;opacity:0;
+        transition:opacity .35s}
+  #thought.show ~ .tdot{opacity:1}
+  .tdot.t1{right:60px;top:92px;width:16px;height:16px}
+  .tdot.t2{right:78px;top:112px;width:10px;height:10px}
+  .tdot.t3{right:88px;top:130px;width:6px;height:6px}
+  #cap{color:#a84d27;font-size:12px;font-weight:800;letter-spacing:.5px}
+  #ctrl{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:4px}
+  button{padding:6px 12px;border:2px solid #241f18;background:#fff;color:#241f18;
+        font-weight:800;cursor:pointer;border-radius:2px;box-shadow:2px 2px 0 #241f18;font-size:12px}
+  button:hover{background:#d96d3a;color:#fff}
+</style></head>
+<body>
+<h1>Solaris · 首页小剧 v2(完整 7 拍 + 行走/摔倒彩蛋 + 云朵思考)</h1>
+<div id="stage">
+  <canvas id="c" width="168" height="168"></canvas>
+  <div id="thought"><span></span></div>
+  <div class="tdot t1"></div><div class="tdot t2"></div><div class="tdot t3"></div>
+</div>
+<div id="cap">loading…</div>
+<div id="ctrl">
+  <button onclick="trigger('click')">点击她(变身)</button>
+  <button onclick="trigger('walk')">行走</button>
+  <button onclick="trigger('fall')">摔倒</button>
+  <button onclick="trigger('wave')">招手</button>
+  <button onclick="trigger('startle')">受惊</button>
+  <button onclick="trigger('blush')">害羞</button>
+  <button onclick="trigger('happy')">开心</button>
+</div>
+<div class="hint">7 拍循环约 30s · 也可点按钮强制触发动作彩蛋 · 思考飘字在右上角云朵框</div>
+
+<script>
+const A={
+ human_idle:{src:'anim_human_idle.png',n:8,fps:8,loop:true},
+ octo_idle: {src:'anim_octo_idle.png', n:6,fps:6,loop:true},
+ morph_h2o: {src:'anim_morph_portal.png',n:25,fps:12,loop:false},
+ morph_o2h: {src:'anim_morph_portal.png',n:25,fps:12,loop:false,reverse:true},
+ walk:      {src:'anim_walk.png',n:4,fps:6,loop:true},
+ fall:      {src:'anim_fall.png',n:6,fps:6,loop:false},
+ // 反应循环(主姿+真中间姿 2 帧来回)
+ r_wave:   {src:'anim_react_wave.png',   n:2,fps:5,loop:true},
+ r_startle:{src:'anim_react_startle.png',n:2,fps:5,loop:true},
+ r_blush:  {src:'anim_react_blush.png',  n:2,fps:4,loop:true},
+ r_happy:  {src:'anim_react_happy.png',  n:2,fps:5,loop:true},
+};
+const SINGLE=['notice','smug','pout','soft','half'];   // 不需要循环的(剩下用单帧)
+SINGLE.forEach(n=>A['r_'+n]={src:'react_'+n+'.png',n:1,fps:1,loop:true,single:true});
+
+const c=document.getElementById('c'),x=c.getContext('2d');x.imageSmoothingEnabled=false;
+const cap=document.getElementById('cap'),th=document.getElementById('thought');
+const CELL=168; let loaded=0; const total=Object.keys(A).length;
+Object.values(A).forEach(a=>{const i=new Image();i.onload=()=>{loaded++;a.im=i;if(loaded===total)start()};i.src=a.src});
+
+let state='human_idle',frame=0,t0=0,beat=0,form='human';
+let walkX=0,walkDir=1;
+
+// 7-拍主线时序
+const STORY=[
+ {at:0,    state:'r_half', say:null},                     // 待机
+ {at:1800, state:'human_idle', say:'……又有人闯进来了。'},   // 察觉(实际眼态用 human_idle 的真眨眼帧来体现)
+ {at:6800, state:'human_idle', say:'技术、生活、还有没说出口的念头——都埋在这座花园里。'}, // 打量
+ {at:13500,state:'morph_h2o', say:'这副样子……比较好藏。'},
+ {at:15700,state:'octo_idle', say:'别紧张,我只是……看着。'}, // 守望
+ {at:22500,state:'morph_o2h', say:null},
+ {at:24700,state:'r_soft',    say:'慢慢看吧。反正我,等了很久了。'}, // 收束
+];
+const LOOP=30000;
+
+function draw(a,f,off){
+  x.clearRect(0,0,CELL,CELL);
+  if(a.single) x.drawImage(a.im,0,0,CELL,CELL,off||0,0,CELL,CELL);
+  else x.drawImage(a.im,f*CELL,0,CELL,CELL,off||0,0,CELL,CELL);
+}
+function say(t){
+  const span=th.querySelector('span');
+  if(!t){th.classList.remove('show');return;}
+  span.textContent=''; th.classList.add('show');
+  let i=0; const tick=()=>{if(i<t.length){span.textContent+=t[i++];setTimeout(tick,55);}};
+  tick();
+  clearTimeout(th._t); th._t=setTimeout(()=>th.classList.remove('show'),3000);
+}
+function setState(s){
+  state=s;frame=A[s].reverse?A[s].n-1:0;t0=performance.now();
+  cap.textContent=s+(A[s].loop?' (loop)':' (once)');
+  if(s==='morph_h2o') form='octo';
+  if(s==='morph_o2h') form='human';
+}
+
+// 强制触发(按钮或点击)
+let storyPaused=false, storyResumeAt=0;
+function trigger(kind){
+  if(state==='morph_h2o'||state==='morph_o2h') return;     // 变身中不打断
+  storyPaused=true; storyResumeAt=performance.now()+2500;
+  if(kind==='click'){
+    if(form==='human'){setState('morph_h2o');say('这副样子……比较好藏。');}
+    else{setState('morph_o2h');}
+    storyResumeAt=performance.now()+25*1000/12;             // morph 时长
+  } else if(kind==='walk'){
+    setState('walk');walkX=0;walkDir=1;say('……出去走走。');
+    storyResumeAt=performance.now()+4500;
+  } else if(kind==='fall'){
+    setState('fall');say('诶?!');
+    storyResumeAt=performance.now()+6/6*1000+800;
+  } else if(SINGLE.includes(kind)){
+    setState('r_'+kind);
+    const lines={wave:'(招手)',startle:'……别戳!',blush:'……',happy:'嗯。',smug:'就这?'};
+    if(lines[kind]) say(lines[kind]);
+    storyResumeAt=performance.now()+1800;
+  }
+}
+c.parentElement.addEventListener('click',e=>{
+  // 只在角色 canvas 命中区触发
+  const r=c.getBoundingClientRect();
+  if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom) trigger('click');
+});
+
+let last=0;
+function loop(t){
+  const a=A[state],iv=1000/a.fps;
+  if(t-last>iv){last=t;
+    if(a.reverse){frame--; if(frame<0){if(a.loop)frame=a.n-1; else frame=0;}}
+    else        {frame++; if(frame>=a.n){if(a.loop)frame=0; else frame=a.n-1;}}
+    // 行走时精灵原地播,但平移舞台位置
+    let offX=0;
+    if(state==='walk'){
+      walkX += walkDir*1.4;
+      if(walkX>60) walkDir=-1; else if(walkX<-60) walkDir=1;
+      offX = Math.round(walkX);
+    }
+    x.clearRect(0,0,CELL,CELL);
+    if(a.single) x.drawImage(a.im,0,0,CELL,CELL,0,0,CELL,CELL);
+    else x.drawImage(a.im,frame*CELL,0,CELL,CELL,0,0,CELL,CELL);
+    // 平移到 stage 上的角色容器位置(用 transform 比改 canvas 重绘便宜)
+    c.style.transform=`translate(calc(-50% + ${offX}px), -50%)`;
+    // 单次动作播完回到主线
+    if(!a.loop){
+      const done = a.reverse ? frame===0 : frame===a.n-1;
+      if(done){
+        if(state==='morph_h2o'){setState('octo_idle');}
+        else if(state==='morph_o2h'){setState('r_soft');say('慢慢看吧。反正我,等了很久了。');}
+        else if(state==='fall'){setState('human_idle');}
+      }
+    }
+  }
+  // 主线节拍
+  if(!storyPaused){
+    const elapsed=(t-storyStart)%LOOP;
+    while(beat<STORY.length && elapsed>=STORY[beat].at){
+      const b=STORY[beat];
+      if(b.state!==state && state!=='morph_h2o' && state!=='morph_o2h') setState(b.state);
+      if(b.say) say(b.say);
+      beat++;
+    }
+    if(elapsed<STORY[0].at) beat=0;   // 新循环
+  } else if(t>=storyResumeAt){
+    storyPaused=false; storyStart=t-STORY[0].at; beat=0; setState('human_idle');
+  }
+  requestAnimationFrame(loop);
+}
+let storyStart=0;
+function start(){
+  storyStart=performance.now();
+  setState('r_half'); say(null);
+  requestAnimationFrame(loop);
+}
+</script>
+</body></html>

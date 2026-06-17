@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>Solaris 人形 Idle 动画预览</title>
+<style>
+  body { background: #f3e5cf; font-family: sans-serif; padding: 2rem; }
+  h1 { color: #241f18; }
+  canvas { image-rendering: pixelated; border: 3px solid #241f18; background: #f3e5cf; }
+  .controls { margin-top: 1rem; }
+  button { padding: 8px 16px; margin-right: 8px; cursor: pointer; border: 2px solid #241f18; background: #d96d3a; color: #fff; font-weight: bold; }
+  button:hover { background: #a84d27; }
+  .info { margin-top: 1rem; color: #5e5548; font-size: 14px; }
+  .frames { display: flex; gap: 4px; margin-top: 1rem; }
+  .frames img { image-rendering: pixelated; border: 1px solid #241f18; width: 64px; height: 64px; }
+</style>
+</head>
+<body>
+<h1>Solaris 人形 Idle 动画预览</h1>
+<canvas id="canvas" width="256" height="256"></canvas>
+<div class="controls">
+  <button onclick="togglePlay()">播放/暂停</button>
+  <button onclick="changeSpeed(-1)">减速</button>
+  <button onclick="changeSpeed(1)">加速</button>
+</div>
+<div class="info" id="info">FPS: 8 | 帧: 0</div>
+
+<h2>逐帧预览</h2>
+<div class="frames" id="frameList"></div>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+ctx.imageSmoothingEnabled = false;
+
+const frames = [];
+const frameNames = ['frame_01','frame_02','frame_03','frame_04','frame_05','frame_06','frame_07','frame_08'];
+let loaded = 0;
+let currentFrame = 0;
+let playing = true;
+let fps = 8;
+let lastTime = 0;
+const DISPLAY_SCALE = 4; // 64x64 → 256x256 display
+
+// Load frames
+frameNames.forEach((name, i) => {
+  const img = new Image();
+  img.src = name + '.png';
+  img.onload = () => { loaded++; updateInfo(); };
+  img.onerror = () => { 
+    // frame missing, use previous frame as placeholder
+    if (i > 0) frames[i] = frames[i-1]; 
+    loaded++; 
+    updateInfo(); 
+  };
+  frames[i] = img;
+});
+
+// Add frame thumbnails
+const frameList = document.getElementById('frameList');
+frameNames.forEach(name => {
+  const img = document.createElement('img');
+  img.src = name + '.png';
+  img.onerror = () => { img.style.background = '#eee'; img.alt = '缺失'; };
+  frameList.appendChild(img);
+});
+
+function animate(timestamp) {
+  if (playing && loaded >= 7) {
+    const interval = 1000 / fps;
+    if (timestamp - lastTime > interval) {
+      currentFrame = (currentFrame + 1) % frames.length;
+      lastTime = timestamp;
+      drawFrame();
+    }
+  }
+  requestAnimationFrame(animate);
+}
+
+function drawFrame() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const f = frames[currentFrame];
+  if (f && f.complete && f.naturalWidth) {
+    // 自适应任意单帧尺寸(64 / 128),整图缩放铺满画布
+    ctx.drawImage(f, 0, 0, f.naturalWidth, f.naturalHeight, 0, 0, canvas.width, canvas.height);
+  }
+  updateInfo();
+}
+
+function updateInfo() {
+  document.getElementById('info').textContent = 
+    `FPS: ${fps} | 帧: ${currentFrame + 1}/8 | 已加载: ${loaded}/8`;
+}
+
+function togglePlay() { playing = !playing; }
+function changeSpeed(dir) { fps = Math.max(2, Math.min(24, fps + dir * 2)); }
+
+requestAnimationFrame(animate);
+</script>
+</body>
+</html>

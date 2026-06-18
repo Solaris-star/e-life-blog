@@ -217,8 +217,8 @@ const CharacterCanvas = forwardRef<HTMLCanvasElement, CharacterCanvasProps>(func
     let alive = true;
     let raf = 0;
     let cellSolaris = 120;
-    let cellCatA = 100;
-    let cellCatB = 110;
+    let cellCatA = 120;
+    let cellCatB = 120;
     let cssW = 0;
     let cssH = 0;
 
@@ -303,25 +303,31 @@ const CharacterCanvas = forwardRef<HTMLCanvasElement, CharacterCanvasProps>(func
 
     function render() {
       ctx.clearRect(0, 0, cssW, cssH);
-      // Solaris position (center-ish, varies by page)
-      const solScale = 0.8;
-      const solX = cssW * 0.45 - (cellSolaris * solScale) / 2;
-      const solY = cssH * 0.55;
+      // Solaris — 歧路旅人比例:角色约占场景高度 1/3,站在路径上
+      const solScale = Math.min(cssH, cssW) / 360; // 动态缩放,适配场景
+      const solW = cellSolaris * solScale;
+      const solH = cellSolaris * solScale;
+      const solX = cssW * 0.42 - solW / 2;
+      const solY = cssH * 0.62 - solH / 2; // 脚踩在路径上
       drawSprite(action.solarisAnim, M.solarisFrame, solX, solY, solScale, cellSolaris);
 
-      // Brother cat (high position or loaf)
+      // Brother cat (高处或趴卧)
       if (action.brotherCatVisible && action.brotherCatAnim) {
-        const bScale = 0.7;
-        const bX = cssW * 0.75 - (cellCatA * bScale) / 2;
-        const bY = cssH * 0.2; // high up
+        const bScale = solScale * 0.85;
+        const bW = cellCatA * bScale;
+        const bH = cellCatA * bScale;
+        const bX = cssW * 0.72 - bW / 2;
+        const bY = cssH * 0.15 - bH / 2; // 高处
         drawSprite(action.brotherCatAnim, M.brotherFrame, bX, bY, bScale, cellCatA);
       }
 
-      // Younger cat (ground level, wandering)
+      // Younger cat (地面,游荡)
       if (action.youngerCatVisible && action.youngerCatAnim) {
-        const yScale = 0.75;
-        const yX = cssW * 0.2 - (cellCatB * yScale) / 2;
-        const yY = cssH * 0.6;
+        const yScale = solScale * 0.9;
+        const yW = cellCatB * yScale;
+        const yH = cellCatB * yScale;
+        const yX = cssW * 0.18 - yW / 2;
+        const yY = cssH * 0.68 - yH / 2; // 地面
         drawSprite(action.youngerCatAnim, M.youngerFrame, yX, yY, yScale, cellCatB);
       }
     }

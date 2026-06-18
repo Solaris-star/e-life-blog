@@ -261,7 +261,18 @@ const CharacterCanvas = forwardRef<HTMLCanvasElement, CharacterCanvasProps>(func
       const f = Math.max(0, Math.min(a.n - 1, frame));
       const drawW = cell * scale;
       const drawH = cell * scale;
+      // Draw contact shadow at feet (more visible)
+      ctx.save();
+      ctx.globalAlpha = 0.35;
+      ctx.fillStyle = "#1a1a2e";
+      ctx.beginPath();
+      ctx.ellipse(dx + drawW / 2, dy + drawH - 2, drawW * 0.4, drawH * 0.06, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+      // Draw sprite with pixelated rendering
+      ctx.imageSmoothingEnabled = false;
       ctx.drawImage(a.img, f * cell, 0, cell, cell, dx, dy, drawW, drawH);
+      ctx.imageSmoothingEnabled = true;
     }
 
     function step(dt: number) {
@@ -418,9 +429,7 @@ function SceneBackground({ page, reduced }: { page: PageId; reduced: boolean }) 
   const sceneNum = { home: 1, articles: 2, daily: 3, resources: 4, writing: 5 }[page];
   return (
     <div className={styles.sceneBg} aria-hidden="true">
-      <img src={`${SCENE_BASE}scene${sceneNum}_far.png`} alt="" className={styles.layerFar} />
-      <img src={`${SCENE_BASE}scene${sceneNum}_mid.png`} alt="" className={styles.layerMid} />
-      <img src={`${SCENE_BASE}scene${sceneNum}_near.png`} alt="" className={styles.layerNear} />
+      <img src={`${SCENE_BASE}scene${sceneNum}.png`} alt="" className={styles.sceneImg} />
       {/* Dynamic atmosphere layer (CSS animated) */}
       <div className={`${styles.atmosphere} ${styles[`scene${sceneNum}Atm`]}`} data-reduced={reduced} />
     </div>

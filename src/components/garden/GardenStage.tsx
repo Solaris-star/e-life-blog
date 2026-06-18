@@ -367,20 +367,6 @@ const CharacterCanvas = forwardRef<HTMLCanvasElement, CharacterCanvasProps>(func
     window.addEventListener("pointermove", onPointerMove, { passive: true });
     canvas.addEventListener("click", onClick);
 
-    // Show thought if available
-    if (action.solarisSay) {
-      setThought({ full: action.solarisSay, shown: "", on: true });
-      let i = 0;
-      const typeTimer = setInterval(() => {
-        i += 1;
-        setThought((t) => ({ ...t, shown: t.full.slice(0, i) }));
-        if (i >= action.solarisSay!.length) {
-          clearInterval(typeTimer);
-          setTimeout(() => setThought((t) => ({ ...t, on: false })), THOUGHT_HOLD_MS);
-        }
-      }, TYPE_MS);
-    }
-
     raf = requestAnimationFrame(loop);
 
     return () => {
@@ -392,6 +378,32 @@ const CharacterCanvas = forwardRef<HTMLCanvasElement, CharacterCanvasProps>(func
       canvas.removeEventListener("click", onClick);
     };
   }, [sceneReady, action, reduced, loaded]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Thought bubble — independent effect, only re-triggers on say text change
+  useEffect(() => {
+    if (!action.solarisSay || reduced) {
+      setThought((t) => ({ ...t, on: false }));
+      return;
+    }
+    const text = action.solarisSay;
+    setThought({ full: text, shown: "", on: true });
+    let i = 0;
+    let typeTimer: ReturnType<typeof setInterval> | null = null;
+    let holdTimer: ReturnType<typeof setTimeout> | null = null;
+    typeTimer = setInterval(() => {
+      i += 1;
+      setThought((t) => ({ ...t, shown: t.full.slice(0, i) }));
+      if (i >= text.length) {
+        if (typeTimer) clearInterval(typeTimer);
+        typeTimer = null;
+        holdTimer = setTimeout(() => setThought((t) => ({ ...t, on: false })), THOUGHT_HOLD_MS);
+      }
+    }, TYPE_MS);
+    return () => {
+      if (typeTimer) clearInterval(typeTimer);
+      if (holdTimer) clearTimeout(holdTimer);
+    };
+  }, [action.solarisSay, reduced]);
 
   return <canvas ref={canvasRef} className={styles.canvas} aria-hidden="true" />;
 });

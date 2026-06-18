@@ -1,7 +1,7 @@
 {
   "human_idle": {
     "file": "anim_human_idle.png",
-    "frames": 6,
+    "frames": 8,
     "fps": 8,
     "loop": true,
     "cell": 120
@@ -57,14 +57,14 @@
   },
   "morph_to_octo": {
     "file": "anim_morph_to_octo.png",
-    "frames": 16,
+    "frames": 25,
     "fps": 12,
     "loop": false,
     "cell": 120
   },
   "morph_to_human": {
     "file": "anim_morph_to_human.png",
-    "frames": 16,
+    "frames": 25,
     "fps": 12,
     "loop": false,
     "cell": 120
@@ -76,81 +76,95 @@
     "loop": true,
     "cell": 120
   },
+  "octo_curious": {
+    "file": "anim_octo_curious.png",
+    "frames": 1,
+    "fps": 1,
+    "loop": false,
+    "cell": 120
+  },
+  "octo_curl": {
+    "file": "anim_octo_curl.png",
+    "frames": 1,
+    "fps": 1,
+    "loop": false,
+    "cell": 120
+  },
   "catA_loaf": {
     "file": "anim_catA_loaf.png",
     "frames": 4,
     "fps": 4,
     "loop": true,
-    "cell": 100
+    "cell": 120
   },
   "catA_sit_high": {
     "file": "anim_catA_sit_high.png",
     "frames": 1,
     "fps": 1,
     "loop": false,
-    "cell": 100
+    "cell": 120
   },
   "catA_slap": {
     "file": "anim_catA_slap.png",
     "frames": 2,
     "fps": 6,
     "loop": false,
-    "cell": 100
+    "cell": 120
   },
   "catA_jump_down": {
     "file": "anim_catA_jump_down.png",
     "frames": 3,
     "fps": 8,
     "loop": false,
-    "cell": 100
+    "cell": 120
   },
   "catB_idle": {
     "file": "anim_catB_idle.png",
     "frames": 4,
     "fps": 4,
     "loop": true,
-    "cell": 110
+    "cell": 120
   },
   "catB_run": {
     "file": "anim_catB_run.png",
     "frames": 6,
     "fps": 10,
     "loop": true,
-    "cell": 110
+    "cell": 120
   },
   "catB_dive": {
     "file": "anim_catB_dive.png",
     "frames": 2,
     "fps": 4,
     "loop": false,
-    "cell": 110
+    "cell": 120
   },
   "catB_play": {
     "file": "anim_catB_play.png",
     "frames": 4,
     "fps": 6,
     "loop": true,
-    "cell": 110
+    "cell": 120
   },
   "catB_jump": {
     "file": "anim_catB_jump.png",
     "frames": 3,
     "fps": 8,
     "loop": false,
-    "cell": 110
+    "cell": 120
   },
   "catB_wet": {
     "file": "anim_catB_wet.png",
     "frames": 1,
     "fps": 1,
     "loop": false,
-    "cell": 110
+    "cell": 120
   },
   "catB_puff": {
     "file": "anim_catB_puff.png",
     "frames": 1,
     "fps": 1,
     "loop": false,
-    "cell": 110
+    "cell": 120
   }
 }

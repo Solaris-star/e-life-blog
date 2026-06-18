@@ -19,6 +19,7 @@ import { getIdeas, getPostListDescription, getPosts, type Post } from "@/lib/con
 import { getCurrentUser, type MemberUser } from "@/lib/member-auth";
 import { canReadPost } from "@/lib/post-access";
 import HeroGardenImage from "@/components/HeroGardenImage";
+import ClientGardenStage from "@/components/garden/ClientGardenStage";
 import { Reveal } from "@/components/layout/Reveal";
 import { getRadarData } from "@/lib/daily/getRadarData";
 import type { TopStoryItem } from "./daily/types";
@@ -106,8 +107,8 @@ export default async function Home() {
 function HeroSection() {
   return (
     <section className="relative grid min-h-[25rem] items-center justify-items-center overflow-hidden border-b-[3px] border-[color:var(--line)]">
-      <div className="relative z-10 flex min-w-0 items-center justify-center overflow-visible p-5 md:p-8 lg:py-9">
-        {/* GardenStage (global) renders the pixel characters here */}
+      <div className="relative z-10 flex min-w-0 items-center justify-center overflow-visible p-5 md:p-8 lg:py-9 w-full max-w-3xl">
+        <ClientGardenStage page="home" />
       </div>
     </section>
   );

@@ -12,7 +12,6 @@
  */
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { usePathname } from "next/navigation";
 import { useGarden, type PageId } from "./GardenNarrativeContext";
 import styles from "./GardenStage.module.css";
 
@@ -27,24 +26,7 @@ const EYE_FOLLOW = 4;
 
 type Loaded = { img: HTMLImageElement; n: number; fps: number; loop: boolean };
 
-const PAGE_MAP: Record<string, PageId> = {
-  "/": "home",
-  "/articles": "articles",
-  "/daily": "daily",
-  "/resources": "resources",
-  "/writing": "writing",
-};
-
-function resolvePage(pathname: string): PageId | null {
-  if (pathname === "/") return "home";
-  for (const [route, page] of Object.entries(PAGE_MAP)) {
-    if (pathname.startsWith(route)) return page;
-  }
-  return null;
-}
-
-export default function GardenStage() {
-  const pathname = usePathname();
+export default function GardenStage({ page }: { page: PageId }) {
   const garden = useGarden();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [isLight, setIsLight] = useState(false);
@@ -56,9 +38,10 @@ export default function GardenStage() {
     on: false,
   });
 
-  const page = resolvePage(pathname);
-
-  // Theme detection
+  // Visit page on mount
+  useEffect(() => {
+    garden.visitPage(page);
+  }, [page]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     const root = document.documentElement;
     const read = () => setIsLight(root.classList.contains("light"));
@@ -95,12 +78,7 @@ export default function GardenStage() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // Visit page on route change
-  useEffect(() => {
-    if (page) garden.visitPage(page);
-  }, [page]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  if (!page || !isLight) return null;
+  if (!isLight) return null;
 
   const action = garden.getCurrentSceneAction(page);
 

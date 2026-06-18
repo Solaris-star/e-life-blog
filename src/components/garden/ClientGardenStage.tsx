@@ -1,10 +1,10 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import type { PageId } from "./GardenNarrativeContext";
 
-// GardenStage uses usePathname + canvas, must be client-side only
 const GardenStage = dynamic(() => import("./GardenStage"), { ssr: false });
 
-export default function ClientGardenStage() {
-  return <GardenStage />;
+export default function ClientGardenStage({ page }: { page: PageId }) {
+  return <GardenStage page={page} />;
 }

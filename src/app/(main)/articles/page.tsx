@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/member-auth";
 import { canReadPost } from "@/lib/post-access";
 import Link from "next/link";
 import { Reveal } from "@/components/layout/Reveal";
+import ClientGardenStage from "@/components/garden/ClientGardenStage";
 import { PostListCard } from "./PostListCard";
 
 export default async function ArticlesPage() {
@@ -27,6 +28,7 @@ export default async function ArticlesPage() {
 
   return (
     <div className="space-y-12 pb-8">
+      <ClientGardenStage page="articles" />
       <div className="space-y-5">
         <header className="mcm-panel relative overflow-hidden p-7 md:p-10">
           <div className="absolute right-8 top-7 hidden md:block">

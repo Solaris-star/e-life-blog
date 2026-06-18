@@ -5,7 +5,6 @@ import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { GardenNarrativeProvider } from "@/components/garden/GardenNarrativeContext";
-import ClientGardenStage from "@/components/garden/ClientGardenStage";
 
 export const metadata: Metadata = {
   title: "E-Life",
@@ -56,8 +55,6 @@ export default function RootLayout({
             <main className="shell-container flex-grow py-7 md:py-8">
               {children}
             </main>
-            {/* Global garden character stage — renders Solaris + cats on all pages */}
-            <ClientGardenStage />
             <Footer />
           </GardenNarrativeProvider>
         </ThemeProvider>

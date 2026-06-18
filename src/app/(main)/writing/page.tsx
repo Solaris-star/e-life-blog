@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getAllTags, getPosts } from "@/lib/content";
 import styles from "./page.module.css";
+import ClientGardenStage from "@/components/garden/ClientGardenStage";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -126,6 +127,7 @@ export default function WritingPage() {
 
   return (
     <main className={styles.writingPage}>
+      <ClientGardenStage page="writing" />
       <section className={styles.writingHero}>
         <div className={styles.heroCopy}>
           <div className={styles.kicker}>{"// WRITING"}</div>

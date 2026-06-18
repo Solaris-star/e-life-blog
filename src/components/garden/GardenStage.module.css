@@ -1,17 +1,15 @@
 /* GardenStage — 全站像素角色舞台样式 */
 
 .stageWrap {
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  width: min(380px, 32vw);
-  height: min(238px, 20vw);
-  z-index: 50;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  min-height: 280px;
+  max-height: 420px;
   overflow: hidden;
   pointer-events: none;
   user-select: none;
-  border-radius: 12px 0 0 0;
-  box-shadow: -4px -4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
 }
 
 /* === Layered scene background === */

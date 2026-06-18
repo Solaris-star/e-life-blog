@@ -7,6 +7,7 @@ import { RadarSidebar } from "./_components/RadarSidebar";
 import { TabbedSections } from "./_components/TabbedSections";
 import { Reveal } from "@/components/layout/Reveal";
 import { getRadarData } from "@/lib/daily/getRadarData";
+import ClientGardenStage from "@/components/garden/ClientGardenStage";
 
 export const dynamic = "force-dynamic";
 
@@ -41,6 +42,7 @@ export default async function DailyPage() {
 
   return (
     <div className="mx-auto max-w-[1200px] space-y-5 px-4 pb-10 pt-4 md:px-6">
+      <ClientGardenStage page="daily" />
       {/* ═════ Hero ═══════════════════════════ */}
       {/* z-20:入场动画的 transform 会建立层叠上下文，抬高 hero
           保证桌面端节点浮层始终盖在下方面板之上 */}

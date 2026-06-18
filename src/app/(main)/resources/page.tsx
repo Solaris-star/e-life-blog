@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Reveal } from "@/components/layout/Reveal";
+import ClientGardenStage from "@/components/garden/ClientGardenStage";
 import { getCurrentUser } from "@/lib/member-auth";
 import { canReadPost } from "@/lib/post-access";
 
@@ -89,6 +90,7 @@ export default async function ResourcesPage() {
 
   return (
     <div className="space-y-10 pb-8">
+      <ClientGardenStage page="resources" />
       <header className="mcm-panel relative overflow-hidden p-7 md:p-10">
         <div className="absolute right-8 top-8 hidden h-24 w-24 rounded-full border-[18px] border-[color:rgb(217_118_66_/_28%)] md:block" />
         <div className="space-y-4">
